@@ -74,10 +74,10 @@
 
     <p class="footer" id="dataInfo">No data loaded yet. Drop a CSV using the button above.</p>
   </div>
-  // AUTO-LOAD SETTINGS
-  const RAW_CSV_URL = "https://raw.githubusercontent.com/yourusername/sales-dashboard/main/data/sales.csv";
-
+  
 <script>
+const RAW_CSV_URL = "https://raw.githubusercontent.com/yourusername/sales-dashboard/main/data/sales.csv";
+  
   // CSV parser
   function parseCSV(text){
     const rows=[]; let i=0, field='', row=[], inQ=false;
