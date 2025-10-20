@@ -236,6 +236,7 @@ Timestamp,Email Address,Customer ID,FS link,Team,Manager,Package,DA budget,Promo
 10/20/2025 13:20:09,mark@autodealersdigital.com,104253,https://tickets.autodealersdigital.com/crm/sales/contacts/500005121410?tab=overview,Rockers,Jamie,Premium Package,0,No Promo,Red
 10/20/2025 13:56:57,emily@autodealersdigital.com,100426,https://tickets.autodealersdigital.com/crm/sales/deals/500000734495,Training,Jake,Premium Package,0,No Promo,Red
 10/20/2025 14:57:39,hazel@autodealersdigital.com,104820,https://tickets.autodealersdigital.com/crm/sales/deals/500000716975,Golden Team,Ryan,Ultimate package,0,3for1,Red
+10/20/2025 15:26:14,hazel@autodealersdigital.com,107969,https://tickets.autodealersdigital.com/crm/sales/contacts/500005124100,Golden Team,Ryan,Ultimate package,0,No Promo,Red
 ,,,,,,,,,
 Timestamp,Email Address,Customer ID,FS link,Team,Manager,Package,DA budget,Promotion,Color
 10/1/2025 9:25:54,hazel@autodealersdigital.com,111933,https://tickets.autodealersdigital.com/crm/sales/contacts/500005125719,Golden Team,Ryan,Premium Package,0,ADDCanada,Red
@@ -262,4 +263,3 @@ Timestamp,Email Address,Customer ID,FS link,Team,Manager,Package,DA budget,Promo
 10/2/2025 9:29:35,emily@autodealersdigital.com,111987,https://tickets.autodealersdigital.com/crm/sales/contacts/500010475894,Training,Jake,Ultimate package,0,Bogo,Red
 10/2/2025 10:34:50,alexa@autodealersdigital.com,111989,https://tickets.autodealersdigital.com/crm/sales/contacts/500005135453?tab=overview,Golden Team,Ryan,Ultimate package,0,3for1,Red
 10/2/2025 18:49:31,bill@autodealersdigital.com,111993,https://tickets.autodealersdigital.com/crm/sales/contacts/500005172302?tab=overview,Money Makers,Jessica,Premium Package,0,3for1,Red
-10/3/2025 8:32:22,hazel@autodealersdigital.com,111991,https://tickets.autodealersdigital.com/crm/sales/contacts/500005121533,Golden Team,Ryan,Ultimate package,0,Bogo,Green
