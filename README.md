@@ -8,38 +8,32 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root{
-      --bg:#F3FFFD;
-      --card:#FFFFFF;
-      --ink:#0F172A;
-      --muted:#475569;
-      --brand:#18C5BD;
-      --shadow:0 10px 25px rgba(2,8,23,.08);
-      --radius:18px;
+      --bg:#F6FFFD; --card:#FFFFFF; --ink:#0F172A; --muted:#5B6779;
+      --brand:#18C5BD; --shadow:0 10px 25px rgba(2,8,23,.08); --radius:18px;
     }
     *{box-sizing:border-box}
-    html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+    html,body{margin:0;background:linear-gradient(180deg, var(--bg), #f9ffff);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
     a{color:var(--brand);text-decoration:underline;text-underline-offset:2px}
     .wrap{max-width:1280px;margin:32px auto;padding:0 20px}
-    .head{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-    .title{font-size:32px;font-weight:800}
-    .mood{font-weight:700}
+    .head{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+    .title{font-size:34px;font-weight:900}
+    .mood{font-weight:700;background:#e9fbfa;color:#065f5b;padding:6px 10px;border-radius:999px}
+    .toolbar{display:flex;gap:10px;align-items:center;margin-left:auto}
+    .btn{appearance:none;border:0;background:var(--brand);color:white;padding:10px 14px;border-radius:14px;font-weight:700;box-shadow:var(--shadow);cursor:pointer}
+    .btn.alt{background:#e2f7f5;color:#065f5b}
+    input[type="file"]{display:none}
+    .file-label{cursor:pointer}
     .grid{display:grid;gap:18px}
     .grid.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
     .grid.charts{grid-template-columns:1fr}
     @media(min-width:1100px){.grid.charts{grid-template-columns:1fr 1fr}}
-    @media(max-width:900px){.grid.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
-    .kpi-title{color:var(--muted);font-size:14px}
-    .kpi-value{font-size:32px;font-weight:800;color:var(--brand)}
+    @media(max-width:1000px){.grid.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;border:1px solid #eef4f6}
+    .kpi-title{color:var(--muted);font-size:13px;font-weight:600}
+    .kpi-value{font-size:34px;font-weight:900;color:var(--brand)}
     .chart-title{font-size:18px;font-weight:800;margin:0 0 8px}
-    .footer{opacity:.7;font-size:12px;margin-top:28px}
-    .toolbar{display:flex;gap:10px;align-items:center}
-    .btn{appearance:none;border:0;background:var(--brand);color:white;padding:10px 14px;border-radius:999px;font-weight:700;box-shadow:var(--shadow);cursor:pointer}
-    .btn.alt{background:#e2e8f0;color:#0f172a}
-    input[type="file"]{display:none}
-    .file-label{cursor:pointer}
-    .hint{font-size:12px;color:var(--muted)}
-    code{background:#eef2f7;border-radius:6px;padding:2px 6px}
+    canvas{padding:4px;border-radius:12px}
+    .footer{opacity:.7;font-size:12px;margin-top:22px}
   </style>
 </head>
 <body>
@@ -48,12 +42,12 @@
       <div class="title">Sales Dashboard</div>
       <div class="mood">⭐ Let’s have a KILLER DAY!</div>
       <div class="toolbar">
-        <a id="formLink" class="btn alt" href="#" target="_blank">Open sales form</a>
         <label class="btn file-label" for="file">Load CSV</label>
         <input id="file" type="file" accept=".csv" />
       </div>
     </header>
 
+    <!-- KPIs -->
     <section class="grid kpis">
       <div class="card"><div class="kpi-title">Sales this month</div><div class="kpi-value" id="salesMonth">0</div></div>
       <div class="card"><div class="kpi-title">Sales today</div><div class="kpi-value" id="salesToday">0</div></div>
@@ -62,9 +56,9 @@
       <div class="card"><div class="kpi-title">Sales this week</div><div class="kpi-value" id="salesThisWeek">0</div></div>
       <div class="card"><div class="kpi-title">DA budget total (this month)</div><div class="kpi-value" id="daBudgetMonth">0</div></div>
       <div class="card"><div class="kpi-title">DA budget total (last week)</div><div class="kpi-value" id="daBudgetLastWeek">0</div></div>
-      <div class="card"><div class="kpi-title">Lead Pool Points (this week)</div><div class="kpi-value" id="lppThisWeek">0</div></div>
     </section>
 
+    <!-- Charts -->
     <section class="grid charts">
       <div class="card"><div class="chart-title">This Month's Sales by Sales Rep</div><canvas id="repMonth"></canvas></div>
       <div class="card"><div class="chart-title">Last Week's Sales by Sales Rep</div><canvas id="repLastWeek"></canvas></div>
@@ -75,39 +69,28 @@
       <div class="card"><div class="chart-title">Last Week's Sales by Team</div><canvas id="teamLastWeek"></canvas></div>
       <div class="card"><div class="chart-title">This Week's Sales by Team</div><canvas id="teamThisWeek"></canvas></div>
       <div class="card"><div class="chart-title">Lead Pool Points — Last Week</div><canvas id="lppLastWeek"></canvas></div>
-      <div class="card"><div class="chart-title">Lead Pool Points — This Week</div><canvas id="lppWeek"></canvas></div>
+      <div class="card"><div class="chart-title">Lead Pool Points — This Week</div><canvas id="lppThisWeek"></canvas></div>
     </section>
 
-    <p class="footer" id="dataInfo">No data loaded yet. Drop a CSV or configure RAW_CSV_URL.</p>
+    <p class="footer" id="dataInfo">No data loaded yet. Drop a CSV using the button above.</p>
   </div>
 
 <script>
-  const RAW_CSV_URL = "";
-  const SALES_FORM_URL = "";
-  document.getElementById('formLink').href = SALES_FORM_URL || '#';
-
+  // CSV parser
   function parseCSV(text){
-    const rows = [];
-    let i=0, field='', row=[], inQuotes=false;
-    while(i < text.length){
-      const c = text[i];
-      if(inQuotes){
-        if(c === '"' && text[i+1] === '"'){ field+='"'; i++; }
-        else if(c === '"'){ inQuotes=false; }
-        else { field += c; }
-      }else{
-        if(c === '"'){ inQuotes = true; }
-        else if(c === ','){ row.push(field); field=''; }
-        else if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; }
-        else if(c !== '\r'){ field += c; }
-      }
-      i++;
-    }
-    if(field.length || row.length){ row.push(field); rows.push(row); }
-    const headers = rows.shift().map(h=>h.trim());
-    return rows.filter(r=>r.length===headers.length).map(r=>{
-      const o={}; headers.forEach((h,idx)=>o[h]=r[idx]); return o;
-    });
+    const rows=[]; let i=0, field='', row=[], inQ=false;
+    while(i<text.length){ const c=text[i];
+      if(inQ){ if(c==='"' && text[i+1]==='"'){ field+='"'; i++; }
+               else if(c==='"'){ inQ=false; }
+               else { field+=c; } }
+      else{ if(c==='"') inQ=true; else if(c===','){ row.push(field); field=''; }
+            else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+            else if(c!=='\r'){ field+=c; } }
+      i++; }
+    if(field.length||row.length){ row.push(field); rows.push(row); }
+    const headers=(rows.shift()||[]).map(h=>h.trim());
+    if(!headers.length) return [];
+    return rows.filter(r=>r.length===headers.length).map(r=>{ const o={}; headers.forEach((h,idx)=>o[h]=r[idx]); return o; });
   }
 
   const startOfDay=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
@@ -117,47 +100,93 @@
   const startOfMonth=d=>new Date(d.getFullYear(),d.getMonth(),1);
   const endOfMonth=d=>new Date(d.getFullYear(),d.getMonth()+1,1);
 
-  function toDate(s){const d=new Date(s);if(!isNaN(d))return d;return new Date();}
+  function toDate(s){
+    const direct=new Date(s); if(!isNaN(direct)) return direct;
+    const m=String(s).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?/);
+    if(m){ let [_,a,b,c,h,mi,ss]=m.map(Number); let M=a,D=b; if(a>12){M=b;D=a;} return new Date(c,M-1,D,h||0,mi||0,ss||0); }
+    return new Date(NaN);
+  }
 
-  function rowPoints(r){let pts=1;const pkg=(r['Package']||'').toLowerCase();if(pkg.includes('ultimate'))pts+=0.5;const da=parseFloat((r['DA budget']||'0').replace(/[^0-9.\-]/g,''))||0;if(da>0)pts+=2;const promo=(r['Promotion']||'').toLowerCase().trim();if(promo==='bogo')pts+=0.5;else if(promo==='3for1')pts+=0;else pts+=1;return pts;}
-  function groupSum(rows,key){const m=new Map();rows.forEach(r=>{const k=(r[key]||'Unknown').trim();m.set(k,(m.get(k)||0)+1);});return[...m.entries()].sort((a,b)=>b[1]-a[1]);}
-  function groupPoints(rows,key){const m=new Map();rows.forEach(r=>{const k=(r[key]||'Unknown').trim();m.set(k,(m.get(k)||0)+rowPoints(r));});return[...m.entries()].sort((a,b)=>b[1]-a[1]);}
-  function drawBar(id,labels,vals){const c=document.getElementById(id);if(!c)return;if(c._chart)c._chart.destroy();c._chart=new Chart(c,{type:'bar',data:{labels,datasets:[{data:vals}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});}
-  function setText(id,v){document.getElementById(id).textContent=Math.round(v*100)/100;}
+  function weightedSales(r){
+    let add = 1;
+    const promo = (r['Promotion'] || '').toLowerCase();
+    if (promo.includes('yearly')) add += 1;
+    if (promo.includes('yearly') && promo.includes('promo')) add += 1;
+    return add;
+  }
+
+  function rowPoints(r){
+    let pts=1;
+    const promo=(r['Promotion']||'').toLowerCase();
+    if(promo.includes('yearly')) pts+=1;
+    if((r['Package']||'').toLowerCase().includes('ultimate')) pts+=0.5;
+    const da=parseFloat(String(r['DA budget']||'0').replace(/[^0-9.\-]/g,''))||0; if(da>0) pts+=2;
+    if(promo==='bogo') pts+=0.5; else if(promo==='3for1') pts+=0; else pts+=1;
+    return pts;
+  }
+
+  function groupWeighted(rows,key){ const m=new Map(); rows.forEach(r=>{ const k=(r[key]||'Unknown').trim(); m.set(k,(m.get(k)||0)+weightedSales(r)); }); return [...m.entries()].sort((a,b)=>b[1]-a[1]); }
+  function groupPoints(rows,key){ const m=new Map(); rows.forEach(r=>{ const k=(r[key]||'Unknown').trim(); m.set(k,(m.get(k)||0)+rowPoints(r)); }); return [...m.entries()].sort((a,b)=>b[1]-a[1]); }
+
+  function drawBar(id,labels,vals){ const c=document.getElementById(id); if(!c) return; if(c._chart) c._chart.destroy(); c._chart=new Chart(c,{type:'bar',data:{labels,datasets:[{data:vals,borderRadius:8,barPercentage:.8,categoryPercentage:.7}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}}); }
+
+  function setText(id,v){ const el=document.getElementById(id); if(el) el.textContent=(typeof v==='number'?Math.round(v*100)/100:v); }
 
   function computeAll(rows){
+    const stamped=rows.map(r=>{const d=toDate(r['Timestamp']);return isNaN(d)?null:{...r,__date:d};}).filter(Boolean);
     const now=new Date();
     const t0=startOfDay(now),t1=addDays(t0,1);
     const y0=addDays(t0,-1),y1=t0;
     const w0=startOfWeek(now),w1=endOfWeek(now);
+    const lw0=addDays(w0,-7),lw1=w0;
     const m0=startOfMonth(now),m1=endOfMonth(now);
 
-    const data=rows.map(r=>({...r,__date:toDate(r['Timestamp'])}));
-    const today=data.filter(r=>r.__date>=t0&&r.__date<t1);
-    const yday=data.filter(r=>r.__date>=y0&&r.__date<y1);
-    const thisW=data.filter(r=>r.__date>=w0&&r.__date<w1);
-    const thisM=data.filter(r=>r.__date>=m0&&r.__date<m1);
+    const today=stamped.filter(r=>r.__date>=t0&&r.__date<t1);
+    const yday=stamped.filter(r=>r.__date>=y0&&r.__date<y1);
+    const thisW=stamped.filter(r=>r.__date>=w0&&r.__date<w1);
+    const lastW=stamped.filter(r=>r.__date>=lw0&&r.__date<lw1);
+    const thisM=stamped.filter(r=>r.__date>=m0&&r.__date<m1);
 
-    setText('salesMonth',thisM.length);
-    setText('salesToday',today.length);
-    setText('salesLastWeek',thisW.length);
-    setText('salesYesterday',yday.length);
-    setText('salesThisWeek',thisW.length);
-    setText('daBudgetMonth',thisM.reduce((a,r)=>a+(parseFloat((r['DA budget']||'0').replace(/[^0-9.\-]/g,''))||0),0));
-    setText('daBudgetLastWeek',thisW.reduce((a,r)=>a+(parseFloat((r['DA budget']||'0').replace(/[^0-9.\-]/g,''))||0),0));
-    setText('lppThisWeek',thisW.reduce((a,r)=>a+rowPoints(r),0));
+    const wsum=a=>a.reduce((s,r)=>s+weightedSales(r),0);
+    const sumDA=a=>a.reduce((s,r)=>s+(parseFloat(String(r['DA budget']||'0').replace(/[^0-9.\-]/g,''))||0),0);
 
-    const repThisW=groupSum(thisW,'Email Address').map(([k,v])=>[emailToName(k),v]);
-    drawBar('repThisWeek',repThisW.map(x=>x[0]),repThisW.map(x=>x[1]));
+    setText('salesMonth',wsum(thisM));
+    setText('salesToday',wsum(today));
+    setText('salesYesterday',wsum(yday));
+    setText('salesThisWeek',wsum(thisW));
+    setText('salesLastWeek',wsum(lastW));
+    setText('daBudgetMonth',sumDA(thisM));
+    setText('daBudgetLastWeek',sumDA(lastW));
 
-    const teamThisW=groupSum(thisW,'Team');
-    drawBar('teamThisWeek',teamThisW.map(x=>x[0]),teamThisW.map(x=>x[1]));
+    const rM=groupWeighted(thisM,'Email Address').map(([k,v])=>[emailToName(k),v]);
+    drawBar('repMonth',rM.map(x=>x[0]),rM.map(x=>x[1]));
+    const rLW=groupWeighted(lastW,'Email Address').map(([k,v])=>[emailToName(k),v]);
+    drawBar('repLastWeek',rLW.map(x=>x[0]),rLW.map(x=>x[1]));
+    const rY=groupWeighted(yday,'Email Address').map(([k,v])=>[emailToName(k),v]);
+    drawBar('repYesterday',rY.map(x=>x[0]),rY.map(x=>x[1]));
+    const rT=groupWeighted(today,'Email Address').map(([k,v])=>[emailToName(k),v]);
+    drawBar('repToday',rT.map(x=>x[0]),rT.map(x=>x[1]));
+    const rW=groupWeighted(thisW,'Email Address').map(([k,v])=>[emailToName(k),v]);
+    drawBar('repThisWeek',rW.map(x=>x[0]),rW.map(x=>x[1]));
+
+    const tM=groupWeighted(thisM,'Team'); drawBar('teamMonth',tM.map(x=>x[0]),tM.map(x=>x[1]));
+    const tLW=groupWeighted(lastW,'Team'); drawBar('teamLastWeek',tLW.map(x=>x[0]),tLW.map(x=>x[1]));
+    const tW=groupWeighted(thisW,'Team'); drawBar('teamThisWeek',tW.map(x=>x[0]),tW.map(x=>x[1]));
+
+    const lppLW=groupPoints(lastW,'Email Address').map(([k,v])=>[emailToName(k),v]);
+    drawBar('lppLastWeek',lppLW.map(x=>x[0]),lppLW.map(x=>x[1]));
+
+    const lppW=groupPoints(thisW,'Email Address').map(([k,v])=>[emailToName(k),v]);
+    drawBar('lppThisWeek',lppW.map(x=>x[0]),lppW.map(x=>x[1]));
+
+    const info=document.getElementById('dataInfo'); if(info) info.textContent=`Loaded ${stamped.length} rows · Updated ${new Date().toLocaleString()}`;
   }
 
-  function emailToName(e){const l=(e||'').split('@')[0];if(!l)return'Unknown';return l.split('.').map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join(' ');}
+  function emailToName(email){ email=(email||'').trim(); if(!email) return 'Unknown'; const local=email.split('@')[0]; return local.split('.').map(s=>s? (s[0].toUpperCase()+s.slice(1)): '').join(' '); }
 
-  document.getElementById('file').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;const t=await f.text();computeAll(parseCSV(t));});
+  document.getElementById('file').addEventListener('change', async (e)=>{
+    const f=e.target.files?.[0]; if(!f) return; const txt=await f.text(); const rows=parseCSV(txt); computeAll(rows);
+  });
 </script>
 </body>
 </html>
-# Sales-board
