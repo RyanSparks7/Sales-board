@@ -74,6 +74,8 @@
 
     <p class="footer" id="dataInfo">No data loaded yet. Drop a CSV using the button above.</p>
   </div>
+  // AUTO-LOAD SETTINGS
+  const RAW_CSV_URL = "https://raw.githubusercontent.com/yourusername/sales-dashboard/main/data/sales.csv";
 
 <script>
   // CSV parser
@@ -187,6 +189,20 @@
   document.getElementById('file').addEventListener('change', async (e)=>{
     const f=e.target.files?.[0]; if(!f) return; const txt=await f.text(); const rows=parseCSV(txt); computeAll(rows);
   });
+    // Auto-load CSV when the page opens (GitHub Pages)
+  if (RAW_CSV_URL) {
+    fetch(RAW_CSV_URL)
+      .then(res => res.text())
+      .then(text => {
+        const rows = parseCSV(text);
+        computeAll(rows);
+      })
+      .catch(err => {
+        console.error("Error loading CSV:", err);
+        document.getElementById('dataInfo').textContent = "Failed to load CSV automatically.";
+      });
+  }
+
 </script>
 </body>
 </html>
