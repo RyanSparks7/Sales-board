@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- saved from url=(0042)https://ryansparks7.github.io/Sales-board/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sales Dashboard</title>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net/" crossorigin="">
+  <script src="./Sales Dashboard_files/chart.umd.min.js.download"></script>
   <style>
     :root{
       --bg:#F6FFFD; --card:#FFFFFF; --ink:#0F172A; --muted:#5B6779;
@@ -43,39 +43,41 @@
       <div class="mood">⭐ Let’s have a KILLER DAY!</div>
       <div class="toolbar">
         <label class="btn file-label" for="file">Load CSV</label>
-        <input id="file" type="file" accept=".csv" />
+        <input id="file" type="file" accept=".csv">
       </div>
     </header>
 
     <!-- KPIs -->
     <section class="grid kpis">
-      <div class="card"><div class="kpi-title">Sales this month</div><div class="kpi-value" id="salesMonth">0</div></div>
-      <div class="card"><div class="kpi-title">Sales today</div><div class="kpi-value" id="salesToday">0</div></div>
-      <div class="card"><div class="kpi-title">Sales last week</div><div class="kpi-value" id="salesLastWeek">0</div></div>
-      <div class="card"><div class="kpi-title">Sales yesterday</div><div class="kpi-value" id="salesYesterday">0</div></div>
-      <div class="card"><div class="kpi-title">Sales this week</div><div class="kpi-value" id="salesThisWeek">0</div></div>
-      <div class="card"><div class="kpi-title">DA budget total (this month)</div><div class="kpi-value" id="daBudgetMonth">0</div></div>
-      <div class="card"><div class="kpi-title">DA budget total (last week)</div><div class="kpi-value" id="daBudgetLastWeek">0</div></div>
+      <div class="card"><div class="kpi-title">Sales this month</div><div class="kpi-value" id="salesMonth">255</div></div>
+      <div class="card"><div class="kpi-title">Sales today</div><div class="kpi-value" id="salesToday">9</div></div>
+      <div class="card"><div class="kpi-title">Sales last week</div><div class="kpi-value" id="salesLastWeek">112</div></div>
+      <div class="card"><div class="kpi-title">Sales yesterday</div><div class="kpi-value" id="salesYesterday">18</div></div>
+      <div class="card"><div class="kpi-title">Sales this week</div><div class="kpi-value" id="salesThisWeek">27</div></div>
+      <div class="card"><div class="kpi-title">DA budget total (this month)</div><div class="kpi-value" id="daBudgetMonth">1200</div></div>
+      <div class="card"><div class="kpi-title">DA budget total (last week)</div><div class="kpi-value" id="daBudgetLastWeek">1200</div></div>
     </section>
 
     <!-- Charts -->
     <section class="grid charts">
-      <div class="card"><div class="chart-title">This Month's Sales by Sales Rep</div><canvas id="repMonth"></canvas></div>
-      <div class="card"><div class="chart-title">Last Week's Sales by Sales Rep</div><canvas id="repLastWeek"></canvas></div>
-      <div class="card"><div class="chart-title">Yesterday's Sales by Sales Rep</div><canvas id="repYesterday"></canvas></div>
-      <div class="card"><div class="chart-title">Today's Sales by Sales Rep</div><canvas id="repToday"></canvas></div>
-      <div class="card"><div class="chart-title">This Week's Sales by Sales Rep</div><canvas id="repThisWeek"></canvas></div>
-      <div class="card"><div class="chart-title">This Month's Sales by Team</div><canvas id="teamMonth"></canvas></div>
-      <div class="card"><div class="chart-title">Last Week's Sales by Team</div><canvas id="teamLastWeek"></canvas></div>
-      <div class="card"><div class="chart-title">This Week's Sales by Team</div><canvas id="teamThisWeek"></canvas></div>
-      <div class="card"><div class="chart-title">Lead Pool Points — Last Week</div><canvas id="lppLastWeek"></canvas></div>
-      <div class="card"><div class="chart-title">Lead Pool Points — This Week</div><canvas id="lppThisWeek"></canvas></div>
+      <div class="card"><div class="chart-title">This Month's Sales by Sales Rep</div><canvas id="repMonth" width="573" height="286" style="display: block; box-sizing: border-box; height: 286px; width: 573px;"></canvas></div>
+      <div class="card"><div class="chart-title">Last Week's Sales by Sales Rep</div><canvas id="repLastWeek" width="573" height="286" style="display: block; box-sizing: border-box; height: 286px; width: 573px;"></canvas></div>
+      <div class="card"><div class="chart-title">Yesterday's Sales by Sales Rep</div><canvas id="repYesterday" width="573" height="286" style="display: block; box-sizing: border-box; height: 286px; width: 573px;"></canvas></div>
+      <div class="card"><div class="chart-title">Today's Sales by Sales Rep</div><canvas id="repToday" width="573" height="286" style="display: block; box-sizing: border-box; height: 286px; width: 573px;"></canvas></div>
+      <div class="card"><div class="chart-title">This Week's Sales by Sales Rep</div><canvas id="repThisWeek" width="573" height="286" style="display: block; box-sizing: border-box; height: 286px; width: 573px;"></canvas></div>
+      <div class="card"><div class="chart-title">This Month's Sales by Team</div><canvas id="teamMonth" width="573" height="286" style="display: block; box-sizing: border-box; height: 286px; width: 573px;"></canvas></div>
+      <div class="card"><div class="chart-title">Last Week's Sales by Team</div><canvas id="teamLastWeek" width="573" height="286" style="display: block; box-sizing: border-box; height: 286px; width: 573px;"></canvas></div>
+      <div class="card"><div class="chart-title">This Week's Sales by Team</div><canvas id="teamThisWeek" width="573" height="286" style="display: block; box-sizing: border-box; height: 286px; width: 573px;"></canvas></div>
+      <div class="card"><div class="chart-title">Lead Pool Points — Last Week</div><canvas id="lppLastWeek" width="573" height="286" style="display: block; box-sizing: border-box; height: 286px; width: 573px;"></canvas></div>
+      <div class="card"><div class="chart-title">Lead Pool Points — This Week</div><canvas id="lppThisWeek" width="573" height="286" style="display: block; box-sizing: border-box; height: 286px; width: 573px;"></canvas></div>
     </section>
 
-    <p class="footer" id="dataInfo">No data loaded yet. Drop a CSV using the button above.</p>
+    <p class="footer" id="dataInfo">Loaded 253 rows · Updated 10/21/2025, 2:31:21 PM</p>
   </div>
-
+ 
 <script>
+const RAW_CSV_URL = "https://raw.githubusercontent.com/RyanSparks7/Sales-board/refs/heads/main/data/csvFile.csv"; 
+  
   // CSV parser
   function parseCSV(text){
     const rows=[]; let i=0, field='', row=[], inQ=false;
@@ -187,6 +189,21 @@
   document.getElementById('file').addEventListener('change', async (e)=>{
     const f=e.target.files?.[0]; if(!f) return; const txt=await f.text(); const rows=parseCSV(txt); computeAll(rows);
   });
+    // Auto-load CSV when the page opens (GitHub Pages)
+  if (RAW_CSV_URL) {
+    fetch(RAW_CSV_URL)
+      .then(res => res.text())
+      .then(text => {
+        const rows = parseCSV(text);
+        computeAll(rows);
+      })
+      .catch(err => {
+        console.error("Error loading CSV:", err);
+        document.getElementById('dataInfo').textContent = "Failed to load CSV automatically.";
+      });
+  }
+
 </script>
-</body>
-</html>
+
+
+</body></html>
