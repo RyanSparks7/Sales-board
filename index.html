@@ -188,6 +188,18 @@
   document.getElementById('file').addEventListener('change', async (e)=>{
     const f=e.target.files?.[0]; if(!f) return; const txt=await f.text(); const rows=parseCSV(txt); computeAll(rows);
   });
+    if (RAW_CSV_URL) {
+    fetch(RAW_CSV_URL)
+      .then(res => res.text())
+      .then(text => {
+        const rows = parseCSV(text);
+        computeAll(rows);
+      })
+      .catch(err => {
+        console.error("Error loading CSV:", err);
+        document.getElementById('dataInfo').textContent = "Failed to load CSV automatically.";
+      });
+  }
 </script>
 </body>
 </html>
