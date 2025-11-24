@@ -107,7 +107,13 @@
     if(m){ let [_,a,b,c,h,mi,ss]=m.map(Number); let M=a,D=b; if(a>12){M=b;D=a;} return new Date(c,M-1,D,h||0,mi||0,ss||0); }
     return new Date(NaN);
   }
-
+  function weightedSales(r){
+    let add = 1;
+    const promo = (r['Promotion'] || '').toLowerCase();
+    if (promo.includes('yearly')) add += 1;
+    if (promo.includes('yearly') && promo.includes('promo')) add += 1;
+    return add;
+  }
 
   function rowPoints(r){
     let pts=1;
