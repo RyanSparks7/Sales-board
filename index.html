@@ -108,13 +108,6 @@
     return new Date(NaN);
   }
 
-  function weightedSales(r){
-    let add = 1;
-    const promo = (r['Promotion'] || '').toLowerCase();
-    if (promo.includes('yearly')) add += 1;
-    if (promo.includes('yearly') && promo.includes('promo')) add += 1;
-    return add;
-  }
 
   function rowPoints(r){
     let pts=1;
