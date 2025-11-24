@@ -108,12 +108,10 @@
     return new Date(NaN);
   }
   function weightedSales(r){
-    let add = 1;
-    const promo = (r['Promotion'] || '').toLowerCase();
-    if (promo.includes('yearly')) add += 1;
-    if (promo.includes('yearly') && promo.includes('promo')) add += 1;
-    return add;
-  }
+  // Each sale counts as exactly 1 sale (no bonus for yearly)
+  return 1;
+}
+
 
   function rowPoints(r){
     let pts=1;
