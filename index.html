@@ -121,7 +121,7 @@
     if(promo.includes('yearly')) pts+=1;
     if((r['Package']||'').toLowerCase().includes('ultimate')) pts+=0.5;
     const da=parseFloat(String(r['DA budget']||'0').replace(/[^0-9.\-]/g,''))||0; if(da>0) pts+=2;
-    if(promo==='bogo') pts+=0.5; else if(promo==='3for1') pts+=0; else pts+=1;
+    if(promo==='bogo') pts+=0.5; else if(promo==='3for1') pts+=0; else if(promo==='addcanada') pts+=0; else pts+=1;
     return pts;
   }
 
