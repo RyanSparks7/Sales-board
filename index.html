@@ -76,7 +76,10 @@
   </div>
 
 <script>
-  const RAW_CSV_URL = "https://docs.google.com/spreadsheets/d/1M0G2T4IXOqwF1ZMpi45FzztVTC5WitDeWjH7Yls-QM0/tq?tqx=out:csv";
+  const SHEET_ID = "1M0G2T4IXOqwF1ZMpi45FzztVTC5WitDeWjH7Yls-QM0";
+const SHEET_GID = "1475519188";
+const RAW_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+
   // CSV parser
   function parseCSV(text){
     const rows=[]; let i=0, field='', row=[], inQ=false;
