@@ -133,7 +133,7 @@ const RAW_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?f
     const m=new Map();
     rows.forEach(r=>{
       const k=(r[key]||'Unknown').trim();
-      if(!m.has(k)) m.set(k,{pts:0,sales:0,colorBest:'',pkgBest:0,promoBest:0});
+      if(!m.has(k)) m.set(k,{pts:0,sales:0,colorBest:0,pkgBest:0,promoBest:0});
       const e=m.get(k);
       e.pts+=rowPoints(r);
       e.sales+=weightedSales(r);
