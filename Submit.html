@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -764,6 +763,7 @@
     const val = document.getElementById('pat-input').value.trim();
     if (!val) { showToast('Please enter your GitHub token.', 'error'); return; }
     GITHUB_TOKEN = val;
+    localStorage.setItem('sb_pat', val);
     document.getElementById('connect-overlay').classList.add('hidden');
     loadData();
   }
@@ -772,6 +772,7 @@
     GITHUB_TOKEN = null;
     cachedData = {};
     cachedSHA  = null;
+    localStorage.removeItem('sb_pat');
     document.getElementById('pat-input').value = '';
     document.getElementById('connect-overlay').classList.remove('hidden');
   }
@@ -944,6 +945,14 @@
   startClock();
   setDateFields();
   buildTagPicker();
+
+  // Auto-connect if token is saved
+  const savedPAT = localStorage.getItem('sb_pat');
+  if (savedPAT) {
+    GITHUB_TOKEN = savedPAT;
+    document.getElementById('connect-overlay').classList.add('hidden');
+    loadData();
+  }
 </script>
 </body>
 </html>
