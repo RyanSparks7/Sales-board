@@ -186,16 +186,21 @@
     .modal input:focus { border-color: var(--accent); }
 
     /* Entry modal */
-    .entry-modal {
+    .entry-modal-outer {
       background: var(--white); border: 1px solid var(--border);
-      border-radius: 16px; padding: 32px; width: 90%; max-width: 500px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.13); position: relative;
-      max-height: 90vh; overflow-y: auto;
+      border-radius: 16px; width: 90%; max-width: 500px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.13);
+      display: flex; flex-direction: column;
+      max-height: 92vh; overflow: hidden;
     }
-    .entry-modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
-    .entry-sub { font-size: 13px; color: var(--muted); margin-bottom: 22px; }
+    .entry-modal-head {
+      padding: 24px 28px 0; flex-shrink: 0; position: relative;
+    }
+    .entry-modal-head h2 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .entry-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+    .entry-modal-body { padding: 0 28px 28px; overflow-y: auto; flex: 1; }
     .modal-close {
-      position: absolute; top: 18px; right: 18px;
+      position: absolute; top: 18px; right: 20px;
       background: var(--bg); border: 1px solid var(--border);
       border-radius: 8px; width: 30px; height: 30px;
       color: var(--muted); font-size: 14px; cursor: pointer;
@@ -208,30 +213,37 @@
       display: block; font-size: 12px; font-weight: 600; color: var(--muted);
       text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px;
     }
-    .field input {
+    .field > input {
       width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
-      padding: 10px 13px; font-size: 14px; color: var(--text); outline: none;
+      padding: 10px 13px; font-size: 14px; color: var(--text); outline: none; background: var(--white);
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,95,240,0.12); }
-    .field input::placeholder { color: var(--muted2); }
+    .field > input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,95,240,0.12); }
+    .field > input::placeholder { color: var(--muted2); }
 
     .winner-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
     .winner-medal { font-size: 18px; flex-shrink: 0; width: 26px; text-align: center; }
     .winner-rep {
-      flex: 1; border: 1.5px solid var(--border); border-radius: 10px;
+      flex: 1; min-width: 0;
+      background: var(--white); border: 1.5px solid var(--border); border-radius: 10px;
       padding: 9px 12px; font-size: 14px; color: var(--text); outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
     .winner-rep:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,95,240,0.12); }
     .winner-rep::placeholder { color: var(--muted2); }
-    .winner-amount {
-      width: 90px; border: 1.5px solid var(--border); border-radius: 10px;
-      padding: 9px 10px; font-size: 14px; color: var(--text); outline: none; text-align: right;
-      transition: border-color 0.2s;
+    .winner-amount-wrap {
+      display: flex; align-items: center;
+      background: var(--white); border: 1.5px solid var(--border); border-radius: 10px;
+      overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; flex-shrink: 0;
     }
-    .winner-amount:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,95,240,0.12); }
+    .winner-amount-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,95,240,0.12); }
+    .winner-amount {
+      width: 70px; border: none; border-radius: 0;
+      padding: 9px 6px 9px 10px; font-size: 14px; color: var(--text); outline: none; text-align: right;
+      background: transparent;
+    }
     .winner-amount::placeholder { color: var(--muted2); }
+    .winner-amt-label { font-size: 12px; font-weight: 600; color: var(--muted); padding-right: 9px; }
     .winner-del {
       background: none; border: 1.5px solid var(--border); border-radius: 7px;
       color: var(--muted2); width: 28px; height: 28px; cursor: pointer;
@@ -310,31 +322,34 @@
 
 <!-- Entry Modal -->
 <div class="overlay hide" id="entryOverlay">
-  <div class="entry-modal">
-    <button class="modal-close" onclick="closeEntry()">✕</button>
-    <h2 id="modalTitle">New Competition</h2>
-    <div class="entry-sub">Fill in the details below</div>
-
-    <div class="field">
-      <label>Competition Type</label>
-      <input type="text" id="entryComp" placeholder="e.g. Most Calls, Highest Revenue…" autocomplete="off" />
+  <div class="entry-modal-outer">
+    <div class="entry-modal-head">
+      <button class="modal-close" onclick="closeEntry()">✕</button>
+      <h2 id="modalTitle">New Competition</h2>
+      <div class="entry-sub">Fill in the details below</div>
     </div>
-    <div class="field">
-      <label>Date</label>
-      <input type="date" id="entryDate" />
+    <div class="entry-modal-body">
+      <div class="field">
+        <label>Competition Type</label>
+        <input type="text" id="entryComp" placeholder="e.g. Most Calls, Highest Revenue…" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="entryDate" />
+      </div>
+      <div class="field">
+        <label>Winners &amp; Prize Amounts</label>
+        <div id="winnersList"></div>
+        <button type="button" class="add-winner-btn" onclick="addWinnerRow()">＋ Add another winner</button>
+      </div>
+      <div class="comp-total-row">
+        <span>This competition total:</span>
+        <strong id="compTotal">MAD 0</strong>
+      </div>
+      <button class="btn-primary" id="saveBtn" onclick="saveEntry()">
+        <span id="saveBtnText">Add Competition</span>
+      </button>
     </div>
-    <div class="field">
-      <label>Winners &amp; Prize Amounts</label>
-      <div id="winnersList"></div>
-      <button type="button" class="add-winner-btn" onclick="addWinnerRow()">＋ Add another winner</button>
-    </div>
-    <div class="comp-total-row">
-      <span>This competition total:</span>
-      <strong id="compTotal">MAD 0</strong>
-    </div>
-    <button class="btn-primary" id="saveBtn" onclick="saveEntry()">
-      <span id="saveBtnText">Add Competition</span>
-    </button>
   </div>
 </div>
 
@@ -505,7 +520,10 @@ function addWinnerRow(rep='', amount='') {
   row.innerHTML = `
     <span class="winner-medal">${MEDALS[idx]||'🏅'}</span>
     <input class="winner-rep" type="text" placeholder="Rep name" value="${rep}" autocomplete="off" oninput="updateTotal()" />
-    <input class="winner-amount" type="number" placeholder="MAD" value="${amount}" min="1" oninput="updateTotal()" />
+    <div class="winner-amount-wrap">
+      <input class="winner-amount" type="number" placeholder="0" value="${amount}" min="1" oninput="updateTotal()" />
+      <span class="winner-amt-label">MAD</span>
+    </div>
     <button class="winner-del" onclick="removeWinnerRow(this)">✕</button>
   `;
   list.appendChild(row);
@@ -543,7 +561,9 @@ function openEntry(idx=null) {
   setTimeout(() => document.getElementById('entryComp').focus(), 100);
 }
 function closeEntry() { hide('entryOverlay'); editingKey = null; }
-document.getElementById('entryOverlay').addEventListener('click', function(e) { if (e.target===this) closeEntry(); });
+document.getElementById('entryOverlay').addEventListener('click', function(e) {
+  if (e.target === this || e.target.classList.contains('overlay')) closeEntry();
+});
 
 // ── Save ──────────────────────────────────────────────────
 async function saveEntry() {
