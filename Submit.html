@@ -252,6 +252,12 @@
     }
     .td-date { color: var(--muted); font-size: 13px; }
     .td-amount { font-weight: 800; font-size: 14px; color: var(--green); }
+    .td-del {
+      background: none; border: 1.5px solid var(--border); border-radius: 7px;
+      color: var(--muted2); font-size: 13px; padding: 4px 8px; cursor: pointer;
+      transition: all 0.15s; line-height: 1;
+    }
+    .td-del:hover { border-color: #fca5a5; color: #ef4444; background: #fff5f5; }
 
     /* ── Empty ── */
     .empty { text-align: center; padding: 52px 24px; color: var(--muted2); }
@@ -397,6 +403,7 @@
           <th>Competition</th>
           <th>Date</th>
           <th>Amount</th>
+          <th></th>
         </tr>
       </thead>
       <tbody id="entriesBody"></tbody>
@@ -521,10 +528,27 @@ async function ghPut(data, sha) {
 async function loadData() {
   try {
     const { data } = await ghGet();
-    allPayouts = Array.isArray(data) ? data : [];
+    allPayouts = (Array.isArray(data) ? data : []).map((p, i) => ({ ...p, _idx: i }));
     renderAll();
   } catch(e) {
     toast('Could not load: ' + e.message, 'err');
+  }
+}
+
+function strip(arr) { return arr.map(({ _idx, ...p }) => p); }
+
+// ── Delete ─────────────────────────────────────────────────
+async function deleteEntry(idx) {
+  if (!confirm('Delete this entry?')) return;
+  try {
+    const { sha } = await ghGet();
+    const updated = allPayouts.filter(p => p._idx !== idx);
+    await ghPut(strip(updated), sha);
+    allPayouts = updated.map((p, i) => ({ ...p, _idx: i }));
+    renderAll();
+    toast('Entry deleted');
+  } catch(e) {
+    toast(e.message || 'Delete failed', 'err');
   }
 }
 
@@ -549,8 +573,8 @@ async function saveEntry() {
     const { data, sha } = await ghGet();
     const updated = Array.isArray(data) ? data : [];
     updated.push({ date, competition: comp, rep, amount });
-    await ghPut(updated, sha);
-    allPayouts = updated;
+    await ghPut(strip(updated), sha);
+    allPayouts = updated.map((p, i) => ({ ...p, _idx: i }));
     closeEntry();
     renderAll();
     toast(`${rep} — MAD ${amount.toLocaleString()} saved!`);
@@ -686,12 +710,13 @@ function renderAll() {
     empty.style.display = '';
   } else {
     empty.style.display = 'none';
-    body.innerHTML = rows.map(p => `
+    body.innerHTML = rows.map((p, i) => `
       <tr>
         <td><span class="td-av">${p.rep[0].toUpperCase()}</span><span class="td-rep">${p.rep}</span></td>
         <td><span class="td-comp">${p.competition}</span></td>
         <td class="td-date">${fmtDate(p.date)}</td>
         <td class="td-amount">MAD ${Number(p.amount).toLocaleString()}</td>
+        <td><button class="td-del" onclick="deleteEntry(${p._idx})">🗑</button></td>
       </tr>`).join('');
   }
 }
