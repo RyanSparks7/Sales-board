@@ -1,958 +1,692 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sales Command Center</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Competition Payouts</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #06071a;
-      --surface:   rgba(255,255,255,0.04);
-      --border:    rgba(255,255,255,0.08);
-      --accent1:   #4f9eff;
-      --accent2:   #a855f7;
-      --success:   #22c55e;
-      --danger:    #ef4444;
-      --text:      #e2e8f0;
-      --muted:     #64748b;
-      --radius:    16px;
+      --bg: #0b0d17;
+      --surface: #13162a;
+      --surface2: #1a1e35;
+      --border: rgba(255,255,255,0.07);
+      --accent: #5b6af0;
+      --accent2: #a78bfa;
+      --green: #34d399;
+      --text: #e4e6f1;
+      --muted: #5a6080;
+      --muted2: #8891b8;
     }
 
-    html, body {
-      height: 100%;
-      font-family: 'Inter', sans-serif;
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg);
       color: var(--text);
-      overflow-x: hidden;
+      min-height: 100vh;
     }
 
-    /* ── Animated background ── */
     body::before {
       content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% -10%, rgba(79,158,255,.18) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 80% 110%, rgba(168,85,247,.15) 0%, transparent 55%);
-      pointer-events: none;
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(91,106,240,0.12) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
     }
 
-    /* ── Grid dots ── */
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background-image: radial-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
-      background-size: 32px 32px;
-      pointer-events: none;
-    }
-
-    /* ════════════════════════════
-       CONNECT MODAL
-    ════════════════════════════ */
-    #connect-overlay {
-      position: fixed; inset: 0; z-index: 999;
+    /* ── Token Modal ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(14px);
       display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(12px);
-      background: rgba(6,7,26,.75);
-      animation: fadeIn .4s ease;
+      z-index: 9999;
     }
+    .overlay.hide { display: none; }
 
-    #connect-overlay.hidden { display: none; }
-
-    .connect-card {
-      background: rgba(15,17,45,.9);
+    .modal {
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 48px 40px;
-      width: min(480px, 90vw);
-      text-align: center;
-      box-shadow: 0 40px 80px rgba(0,0,0,.5);
+      border-radius: 20px;
+      padding: 36px;
+      width: 90%; max-width: 400px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
     }
+    .modal-icon { font-size: 28px; margin-bottom: 14px; }
+    .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .modal p { color: var(--muted2); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
 
-    .connect-card .lock-icon {
-      font-size: 2.5rem;
-      margin-bottom: 16px;
-      display: block;
+    /* ── Entry Modal ── */
+    .entry-modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      width: 90%; max-width: 460px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      position: relative;
     }
+    .entry-modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 24px; }
+    .modal-close {
+      position: absolute; top: 20px; right: 20px;
+      background: rgba(255,255,255,0.06); border: none; border-radius: 8px;
+      width: 30px; height: 30px; color: var(--muted2); font-size: 16px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.12); color: var(--text); }
 
-    .connect-card h2 {
-      font-size: 1.5rem; font-weight: 700;
-      background: linear-gradient(135deg, var(--accent1), var(--accent2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    /* ── Form elements ── */
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block; font-size: 11px; font-weight: 700;
+      color: var(--muted2); text-transform: uppercase; letter-spacing: 0.8px;
       margin-bottom: 8px;
     }
-
-    .connect-card p {
-      color: var(--muted); font-size: .9rem; line-height: 1.6;
-      margin-bottom: 28px;
-    }
-
-    .connect-card a { color: var(--accent1); text-decoration: none; }
-    .connect-card a:hover { text-decoration: underline; }
-
-    .pat-input-wrap {
-      position: relative; margin-bottom: 20px;
-    }
-
-    .pat-input-wrap input {
+    .field input, .field select {
       width: 100%;
-      background: rgba(255,255,255,.05);
+      background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 48px 14px 16px;
-      color: var(--text);
-      font-size: .95rem;
-      outline: none;
-      transition: border-color .2s;
-      font-family: monospace;
+      border-radius: 10px;
+      padding: 11px 13px;
+      color: var(--text); font-size: 14px;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(91,106,240,0.18);
+    }
+    .field input::placeholder { color: var(--muted); }
+    .field select option { background: #1a1e35; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      padding: 8px 18px; border-radius: 50px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted2); font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.18s; user-select: none;
+    }
+    .chip:hover { border-color: rgba(91,106,240,0.4); color: var(--text); }
+    .chip.on {
+      background: rgba(91,106,240,0.2);
+      border-color: var(--accent); color: #fff;
     }
 
-    .pat-input-wrap input:focus { border-color: var(--accent1); }
-
-    .pat-toggle {
-      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-size: 1.1rem; padding: 4px;
+    .amount-wrap { position: relative; }
+    .amount-prefix {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      color: var(--muted2); font-size: 13px; font-weight: 700; pointer-events: none;
     }
+    .amount-wrap input { padding-left: 52px; font-size: 18px; font-weight: 700; }
 
-    .btn-connect {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, var(--accent1), var(--accent2));
-      border: none; border-radius: 12px;
-      color: #fff; font-size: 1rem; font-weight: 600;
-      cursor: pointer;
-      transition: opacity .2s, transform .15s;
+    /* ── Shared button ── */
+    .btn {
+      padding: 11px 20px; border-radius: 10px; border: none;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 7px;
     }
-
-    .btn-connect:hover { opacity: .9; transform: translateY(-1px); }
-    .btn-connect:active { transform: translateY(0); }
-
-    .pat-note {
-      margin-top: 16px; font-size: .78rem; color: var(--muted);
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; width: 100%; justify-content: center;
+      font-size: 14px; padding: 13px;
     }
-
-    /* ════════════════════════════
-       MAIN LAYOUT
-    ════════════════════════════ */
-    #app {
-      position: relative; z-index: 1;
-      min-height: 100vh;
-      display: grid;
-      grid-template-rows: auto 1fr;
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(91,106,240,0.4); }
+    .btn-primary:active { transform: none; }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-ghost {
+      background: transparent; color: var(--muted2);
+      border: 1px solid var(--border); font-size: 12px; padding: 8px 14px;
     }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.16); }
+
+    /* ── App shell ── */
+    .app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 28px 20px; }
 
     /* ── Top bar ── */
     .topbar {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 40px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(6,7,26,.6);
-      backdrop-filter: blur(16px);
-      position: sticky; top: 0; z-index: 10;
-    }
-
-    .topbar .brand {
-      display: flex; align-items: center; gap: 12px;
-    }
-
-    .topbar .brand .logo {
-      width: 36px; height: 36px;
-      background: linear-gradient(135deg, var(--accent1), var(--accent2));
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem;
-    }
-
-    .topbar .brand h1 {
-      font-size: 1.1rem; font-weight: 700;
-      letter-spacing: -.3px;
-    }
-
-    .topbar .brand span {
-      font-size: .75rem; color: var(--muted); font-weight: 400;
-      display: block; margin-top: 1px;
-    }
-
-    .topbar-right {
-      display: flex; align-items: center; gap: 16px;
-    }
-
-    .live-clock {
-      font-size: .85rem; color: var(--muted);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .status-dot {
-      display: flex; align-items: center; gap: 8px;
-      font-size: .8rem; color: var(--success);
-      background: rgba(34,197,94,.08);
-      border: 1px solid rgba(34,197,94,.2);
-      border-radius: 999px;
-      padding: 5px 14px;
-    }
-
-    .status-dot::before {
-      content: '';
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 8px var(--success);
-      animation: pulse 2s infinite;
-    }
-
-    .disconnect-btn {
-      background: none; border: 1px solid var(--border);
-      border-radius: 8px; padding: 6px 12px;
-      color: var(--muted); font-size: .78rem; cursor: pointer;
-      transition: all .2s;
-    }
-    .disconnect-btn:hover { border-color: var(--danger); color: var(--danger); }
-
-    /* ── Content ── */
-    .content {
-      padding: 48px 40px;
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 32px;
-      align-items: start;
-      max-width: 1100px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    /* ── Date hero panel ── */
-    .date-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 36px;
-      backdrop-filter: blur(12px);
-    }
-
-    .date-label {
-      font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 16px;
-      display: flex; align-items: center; gap: 8px;
-    }
-
-    .date-label::before {
-      content: '';
-      flex: 1; height: 1px; background: var(--border);
-    }
-
-    .date-display {
-      font-size: 3.2rem; font-weight: 800;
-      line-height: 1;
-      background: linear-gradient(135deg, var(--accent1) 20%, var(--accent2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 6px;
-    }
-
-    .date-sub {
-      font-size: .9rem; color: var(--muted); margin-bottom: 32px;
-    }
-
-    .info-row {
-      display: flex; gap: 12px;
-    }
-
-    .info-chip {
-      flex: 1;
-      background: rgba(255,255,255,.03);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      text-align: center;
-    }
-
-    .info-chip .chip-num {
-      font-size: 1.5rem; font-weight: 700;
-      background: linear-gradient(135deg, var(--accent1), var(--accent2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-
-    .info-chip .chip-label {
-      font-size: .72rem; color: var(--muted); margin-top: 4px;
-      text-transform: uppercase; letter-spacing: .06em;
-    }
-
-    /* Today's entries list */
-    .entries-list {
-      margin-top: 28px;
-    }
-
-    .entries-title {
-      font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 12px;
-    }
-
-    .entry-item {
-      background: rgba(255,255,255,.03);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 16px;
-      margin-bottom: 8px;
-      display: flex; align-items: flex-start; gap: 12px;
-      animation: slideIn .3s ease;
-    }
-
-    .entry-avatar {
-      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--accent1), var(--accent2));
-      display: flex; align-items: center; justify-content: center;
-      font-size: .75rem; font-weight: 700; color: #fff;
-    }
-
-    .entry-body { flex: 1; min-width: 0; }
-    .entry-name { font-size: .85rem; font-weight: 600; }
-    .entry-note {
-      font-size: .78rem; color: var(--muted); margin-top: 2px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .entry-time { font-size: .7rem; color: var(--muted); margin-top: 4px; }
-
-    .empty-state {
-      text-align: center; padding: 24px;
-      color: var(--muted); font-size: .85rem;
-    }
-    .empty-state .empty-icon { font-size: 2rem; margin-bottom: 8px; opacity: .4; }
-
-    /* ── Form panel ── */
-    .form-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 40px;
-      backdrop-filter: blur(12px);
-    }
-
-    .form-header {
       margin-bottom: 32px;
     }
-
-    .form-header h2 {
-      font-size: 1.4rem; font-weight: 700; margin-bottom: 6px;
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      box-shadow: 0 6px 20px rgba(91,106,240,0.3);
     }
+    .brand-name { font-size: 17px; font-weight: 800; letter-spacing: -0.2px; }
+    .brand-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-    .form-header p { font-size: .85rem; color: var(--muted); }
-
-    .form-group {
-      margin-bottom: 24px;
+    .topbar-right { display: flex; gap: 10px; align-items: center; }
+    .add-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 10px;
+      padding: 10px 18px; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
     }
+    .add-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(91,106,240,0.4); }
 
-    .form-group label {
-      display: flex; align-items: center; gap: 8px;
-      font-size: .78rem; font-weight: 600; letter-spacing: .06em;
-      text-transform: uppercase; color: var(--muted);
-      margin-bottom: 10px;
+    /* ── Filters ── */
+    .filters {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      margin-bottom: 24px; align-items: center;
     }
-
-    .form-group label .req { color: var(--accent1); }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      background: rgba(255,255,255,.05);
+    .filter-group { display: flex; gap: 6px; }
+    .fp {
+      padding: 8px 16px; border-radius: 20px;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      color: var(--text);
-      font-size: .95rem;
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-      font-family: 'Inter', sans-serif;
+      background: transparent; color: var(--muted2);
+      font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.18s;
     }
+    .fp.on { background: rgba(91,106,240,0.15); border-color: rgba(91,106,240,0.4); color: var(--text); }
+    .fp:hover:not(.on) { border-color: rgba(255,255,255,0.16); color: var(--text); }
 
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      border-color: var(--accent1);
-      box-shadow: 0 0 0 3px rgba(79,158,255,.12);
-    }
-
-    .form-group textarea {
-      resize: vertical; min-height: 120px; line-height: 1.6;
-    }
-
-    .date-field-wrap {
-      position: relative;
-    }
-
-    .date-field-wrap input {
-      padding-right: 48px;
-    }
-
-    .date-field-wrap .cal-icon {
-      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-      font-size: 1.1rem; opacity: .4; pointer-events: none;
-    }
-
-    /* Char counter */
-    .char-counter {
-      text-align: right; font-size: .72rem; color: var(--muted);
-      margin-top: 6px;
-    }
-
-    /* Tag picker for salesperson */
-    .tag-picker {
-      display: flex; flex-wrap: wrap; gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .tag-option {
-      padding: 7px 16px;
-      border-radius: 999px;
+    .comp-select {
+      background: var(--surface2);
       border: 1px solid var(--border);
-      background: rgba(255,255,255,.03);
-      color: var(--muted); font-size: .82rem;
-      cursor: pointer; transition: all .2s;
-      user-select: none;
+      border-radius: 20px;
+      padding: 8px 14px;
+      color: var(--text); font-size: 13px;
+      outline: none; cursor: pointer;
+      transition: border-color 0.18s;
     }
+    .comp-select:focus { border-color: var(--accent); }
+    .comp-select option { background: #1a1e35; }
 
-    .tag-option:hover { border-color: var(--accent1); color: var(--accent1); }
-
-    .tag-option.selected {
-      background: rgba(79,158,255,.15);
-      border-color: var(--accent1);
-      color: var(--accent1); font-weight: 600;
+    /* ── Summary cards ── */
+    .summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px; }
+    .sum-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px 20px;
     }
-
-    .tag-custom {
-      flex: 1; min-width: 120px;
+    .sum-val {
+      font-size: 24px; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
+    .sum-label { font-size: 11px; color: var(--muted); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.6px; }
 
-    .tag-custom input {
-      border-radius: 999px !important;
-      padding: 7px 16px !important;
-      font-size: .82rem !important;
+    /* ── Rep breakdown ── */
+    .section-head {
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.9px;
+      margin-bottom: 12px;
     }
-
-    /* ── Submit button ── */
-    .submit-area { margin-top: 8px; }
-
-    .btn-submit {
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, var(--accent1), var(--accent2));
-      border: none; border-radius: 12px;
-      color: #fff; font-size: 1rem; font-weight: 700;
-      cursor: pointer; position: relative; overflow: hidden;
-      transition: transform .15s, opacity .2s;
-      letter-spacing: .02em;
+    .rep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; margin-bottom: 28px; }
+    .rep-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 13px; padding: 16px 18px;
+      display: flex; align-items: center; gap: 13px;
+      transition: border-color 0.18s;
     }
-
-    .btn-submit:hover { transform: translateY(-2px); opacity: .92; }
-    .btn-submit:active { transform: translateY(0); }
-
-    .btn-submit.loading {
-      pointer-events: none; opacity: .7;
+    .rep-card:hover { border-color: rgba(91,106,240,0.3); }
+    .rep-av {
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 16px;
     }
+    .rep-name { font-weight: 700; font-size: 14px; }
+    .rep-meta { font-size: 12px; color: var(--muted2); margin-top: 2px; }
+    .rep-amount { margin-left: auto; font-weight: 800; font-size: 16px; color: var(--green); }
 
-    .btn-submit .btn-text { transition: opacity .2s; }
-    .btn-submit.loading .btn-text { opacity: 0; }
-
-    .btn-submit .spinner {
-      position: absolute; inset: 0;
-      display: none; align-items: center; justify-content: center;
+    /* ── Entries table ── */
+    .table-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
     }
-
-    .btn-submit.loading .spinner { display: flex; }
-
-    .spinner-ring {
-      width: 22px; height: 22px;
-      border: 3px solid rgba(255,255,255,.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      padding: 12px 18px; text-align: left;
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.7px;
+      background: rgba(255,255,255,0.02);
+      border-bottom: 1px solid var(--border);
     }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+    tbody td { padding: 13px 18px; font-size: 14px; }
+    .td-av {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 12px; vertical-align: middle; margin-right: 9px;
+    }
+    .td-rep { font-weight: 600; }
+    .td-comp {
+      display: inline-block; padding: 3px 10px; border-radius: 6px;
+      background: rgba(91,106,240,0.12); border: 1px solid rgba(91,106,240,0.2);
+      font-size: 12px; color: var(--accent2); font-weight: 500;
+    }
+    .td-date { color: var(--muted2); font-size: 13px; }
+    .td-amount { font-weight: 800; font-size: 15px; color: var(--green); }
+
+    /* ── Empty ── */
+    .empty { text-align: center; padding: 52px 24px; color: var(--muted); }
+    .empty .ei { font-size: 38px; margin-bottom: 12px; }
+    .empty p { font-size: 14px; }
 
     /* ── Toast ── */
-    #toast-container {
-      position: fixed; bottom: 28px; right: 28px;
-      z-index: 9999;
-      display: flex; flex-direction: column; gap: 10px;
-      pointer-events: none;
-    }
-
     .toast {
-      padding: 14px 20px;
-      border-radius: 12px;
-      font-size: .85rem; font-weight: 500;
-      display: flex; align-items: center; gap: 10px;
-      box-shadow: 0 8px 32px rgba(0,0,0,.4);
-      animation: slideUp .3s ease;
-      pointer-events: all;
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 13px 22px;
+      font-size: 14px; font-weight: 500;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 9998; white-space: nowrap;
+      display: flex; align-items: center; gap: 9px;
     }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.ok  { border-color: rgba(52,211,153,0.35); }
+    .toast.err { border-color: rgba(248,113,113,0.4); }
 
-    .toast.success {
-      background: rgba(22,163,74,.95);
-      border: 1px solid rgba(34,197,94,.4);
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .toast.error {
-      background: rgba(185,28,28,.95);
-      border: 1px solid rgba(239,68,68,.4);
-    }
-
-    .toast .toast-icon { font-size: 1.1rem; }
-
-    /* ── Keyframes ── */
-    @keyframes fadeIn   { from { opacity: 0 } to { opacity: 1 } }
-    @keyframes slideIn  { from { opacity: 0; transform: translateX(-12px) } to { opacity: 1; transform: none } }
-    @keyframes slideUp  { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: none } }
-    @keyframes spin     { to { transform: rotate(360deg) } }
-    @keyframes pulse    {
-      0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--success); }
-      50%       { opacity: .5; box-shadow: 0 0 3px var(--success); }
-    }
-
-    /* ── Responsive ── */
-    @media (max-width: 768px) {
-      .topbar { padding: 16px 20px; }
-      .content { grid-template-columns: 1fr; padding: 24px 20px; }
-      .date-display { font-size: 2.4rem; }
-      .form-panel, .date-panel { padding: 28px 24px; }
+    @media (max-width: 520px) {
+      .summary { grid-template-columns: 1fr 1fr; }
+      thead th:nth-child(3), tbody td:nth-child(3) { display: none; }
     }
   </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     CONNECT MODAL
-══════════════════════════════════════ -->
-<div id="connect-overlay">
-  <div class="connect-card">
-    <span class="lock-icon">🔐</span>
+<!-- Token Setup -->
+<div class="overlay hide" id="tokenOverlay">
+  <div class="modal">
+    <div class="modal-icon">🔑</div>
     <h2>Connect to GitHub</h2>
-    <p>
-      Enter your GitHub Personal Access Token to enable saving entries.<br/>
-      Your token is kept in memory only — never stored or sent anywhere else.<br/>
-      <a href="https://github.com/settings/tokens/new?scopes=repo&description=SalesBoard" target="_blank">
-        → Generate a token (needs <code>repo</code> scope)
-      </a>
-    </p>
-    <div class="pat-input-wrap">
-      <input type="password" id="pat-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off"/>
-      <button class="pat-toggle" onclick="togglePAT()" title="Show/hide">👁</button>
-    </div>
-    <button class="btn-connect" onclick="connectGitHub()">Connect &amp; Launch</button>
-    <p class="pat-note">⚠ Never commit this token to your repo. It stays in this browser tab only.</p>
+    <p>Enter your GitHub Personal Access Token to read and save payout data. Stored locally in your browser — never shared.</p>
+    <div class="field"><input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" /></div>
+    <button class="btn btn-primary" onclick="saveToken()">Connect →</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     MAIN APP
-══════════════════════════════════════ -->
-<div id="app">
+<!-- Add Entry Modal -->
+<div class="overlay hide" id="entryOverlay">
+  <div class="entry-modal">
+    <button class="modal-close" onclick="closeEntry()">✕</button>
+    <h2>➕ Log Payout</h2>
+
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="entryDate" />
+    </div>
+
+    <div class="field">
+      <label>Competition Name</label>
+      <input type="text" id="entryComp" placeholder="e.g. March Sprint, Q1 Challenge…" />
+    </div>
+
+    <div class="field">
+      <label>Salesperson</label>
+      <div class="chips" id="repChips"></div>
+    </div>
+
+    <div class="field">
+      <label>Amount Paid (AED)</label>
+      <div class="amount-wrap">
+        <span class="amount-prefix">AED</span>
+        <input type="number" id="entryAmount" placeholder="0" min="1" />
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="saveBtn" onclick="saveEntry()">
+      <span id="saveBtnText">Save Entry</span>
+    </button>
+  </div>
+</div>
+
+<!-- App -->
+<div class="app">
 
   <!-- Top bar -->
-  <header class="topbar">
+  <div class="topbar">
     <div class="brand">
-      <div class="logo">📊</div>
+      <div class="brand-icon">🏆</div>
       <div>
-        <h1>Sales Command Center</h1>
-        <span>RyanSparks7 / Sales-board</span>
+        <div class="brand-name">Competition Payouts</div>
+        <div class="brand-sub">RyanSparks7 / Sales-board</div>
       </div>
     </div>
     <div class="topbar-right">
-      <div class="live-clock" id="clock">--:--:--</div>
-      <div class="status-dot" id="status-dot">Connected</div>
-      <button class="disconnect-btn" onclick="disconnect()">Disconnect</button>
+      <button class="btn btn-ghost" onclick="disconnect()">Disconnect</button>
+      <button class="add-btn" onclick="openEntry()">＋ Add Entry</button>
     </div>
-  </header>
+  </div>
 
-  <!-- Content -->
-  <main class="content">
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filter-group">
+      <button class="fp on" onclick="setPeriod('this_week',this)">This Week</button>
+      <button class="fp" onclick="setPeriod('last_week',this)">Last Week</button>
+      <button class="fp" onclick="setPeriod('this_month',this)">This Month</button>
+      <button class="fp" onclick="setPeriod('last_month',this)">Last Month</button>
+      <button class="fp" onclick="setPeriod('all',this)">All Time</button>
+    </div>
+    <select class="comp-select" id="compFilter" onchange="renderAll()">
+      <option value="">All Competitions</option>
+    </select>
+  </div>
 
-    <!-- Left: date + today's log -->
-    <section class="date-panel">
-      <div class="date-label">Today's Date</div>
-      <div class="date-display" id="big-date">—</div>
-      <div class="date-sub" id="day-name">Loading…</div>
+  <!-- Summary -->
+  <div class="summary">
+    <div class="sum-card"><div class="sum-val" id="sTotal">—</div><div class="sum-label">Total Paid</div></div>
+    <div class="sum-card"><div class="sum-val" id="sEntries">—</div><div class="sum-label">Entries</div></div>
+    <div class="sum-card"><div class="sum-val" id="sComps">—</div><div class="sum-label">Competitions</div></div>
+  </div>
 
-      <div class="info-row" id="stats-row">
-        <div class="info-chip">
-          <div class="chip-num" id="stat-today">0</div>
-          <div class="chip-label">Today</div>
-        </div>
-        <div class="info-chip">
-          <div class="chip-num" id="stat-total">0</div>
-          <div class="chip-label">All Time</div>
-        </div>
-      </div>
+  <!-- Rep breakdown -->
+  <div class="section-head">Reps Summary</div>
+  <div class="rep-grid" id="repGrid"></div>
 
-      <div class="entries-list">
-        <div class="entries-title">Today's Entries</div>
-        <div id="entries-container">
-          <div class="empty-state">
-            <div class="empty-icon">📋</div>
-            <div>No entries yet today</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Right: form -->
-    <section class="form-panel">
-      <div class="form-header">
-        <h2>Log a New Entry</h2>
-        <p>Fill in the details below — the date is set automatically.</p>
-      </div>
-
-      <form id="entry-form" onsubmit="handleSubmit(event)">
-
-        <!-- Date (read-only) -->
-        <div class="form-group">
-          <label>📅 Date</label>
-          <div class="date-field-wrap">
-            <input type="text" id="field-date" readonly tabindex="-1"/>
-            <span class="cal-icon">📅</span>
-          </div>
-        </div>
-
-        <!-- Salesperson -->
-        <div class="form-group">
-          <label>👤 Salesperson <span class="req">*</span></label>
-          <div class="tag-picker" id="tag-picker">
-            <!-- Populated by JS — edit SALESPERSON_NAMES below -->
-          </div>
-          <input type="hidden" id="field-salesperson"/>
-        </div>
-
-        <!-- Notes -->
-        <div class="form-group">
-          <label>📝 Notes <span class="req">*</span></label>
-          <textarea id="field-notes" maxlength="500"
-                    placeholder="What happened? Key details, outcomes, next steps…"
-                    oninput="updateCounter()"></textarea>
-          <div class="char-counter"><span id="char-count">0</span> / 500</div>
-        </div>
-
-        <div class="submit-area">
-          <button type="submit" class="btn-submit" id="submit-btn">
-            <span class="btn-text">✦ Submit Entry</span>
-            <span class="spinner"><div class="spinner-ring"></div></span>
-          </button>
-        </div>
-
-      </form>
-    </section>
-
-  </main>
+  <!-- Entries -->
+  <div class="section-head">All Entries</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Rep</th>
+          <th>Competition</th>
+          <th>Date</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody id="entriesBody"></tbody>
+    </table>
+    <div id="emptyState" class="empty" style="display:none">
+      <div class="ei">📭</div>
+      <p>No entries for this period</p>
+    </div>
+  </div>
 </div>
 
-<!-- Toast container -->
-<div id="toast-container"></div>
+<div class="toast" id="toast"></div>
 
-<!-- ══════════════════════════════════════
-     SCRIPT
-══════════════════════════════════════ -->
 <script>
-  // ─────────────────────────────────────
-  // ✏️  CONFIGURE YOUR TEAM NAMES HERE
-  // ─────────────────────────────────────
-  const SALESPERSON_NAMES = [
-    'Ryan',
-    'Alex',
-    'Jordan',
-    'Taylor',
-  ];
+const OWNER  = 'RyanSparks7';
+const REPO   = 'Sales-board';
+const BRANCH = 'main';
+const FILE   = 'data/payouts.json';
+const REPS   = ['Ryan', 'Alex', 'Jordan', 'Taylor'];
 
-  // ─────────────────────────────────────
-  // GitHub config (repo details only — NO token here)
-  // ─────────────────────────────────────
-  const REPO_OWNER  = 'RyanSparks7';
-  const REPO_NAME   = 'Sales-board';
-  const FILE_PATH   = 'data/submissions.json';
-  const BRANCH      = 'main';
+let allPayouts    = [];
+let currentPeriod = 'this_week';
+let selectedRep   = null;
 
-  // ─────────────────────────────────────
-  // Runtime state
-  // ─────────────────────────────────────
-  let GITHUB_TOKEN = null;
-  let cachedData   = {};   // { "YYYY-MM-DD": [ ...entries ] }
-  let cachedSHA    = null;
-
-  // ── Helpers ──────────────────────────
-  function todayISO() {
-    const d = new Date();
-    return d.toISOString().slice(0, 10);
+// ── Boot ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  if (!localStorage.getItem('gh_token')) {
+    show('tokenOverlay');
+  } else {
+    init();
   }
+});
 
-  function todayDisplay() {
-    return new Date().toLocaleDateString('en-US', {
-      month: 'long', day: 'numeric', year: 'numeric'
+function init() {
+  buildChips();
+  loadData();
+}
+
+// ── Token ─────────────────────────────────────────────────
+function saveToken() {
+  const v = document.getElementById('tokenInput').value.trim();
+  if (!v) return toast('Please enter a token', 'err');
+  localStorage.setItem('gh_token', v);
+  hide('tokenOverlay');
+  init();
+}
+function disconnect() {
+  if (!confirm('Disconnect and clear your saved token?')) return;
+  localStorage.removeItem('gh_token');
+  show('tokenOverlay');
+  document.getElementById('tokenInput').value = '';
+}
+function token() { return localStorage.getItem('gh_token'); }
+
+// ── Modal helpers ──────────────────────────────────────────
+function show(id) { document.getElementById(id).classList.remove('hide'); }
+function hide(id) { document.getElementById(id).classList.add('hide'); }
+
+function openEntry() {
+  // Reset form
+  document.getElementById('entryDate').value = todayISO();
+  document.getElementById('entryComp').value = '';
+  document.getElementById('entryAmount').value = '';
+  selectedRep = null;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  show('entryOverlay');
+  document.getElementById('entryComp').focus();
+}
+function closeEntry() { hide('entryOverlay'); }
+
+// Close modal on backdrop click
+document.getElementById('entryOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeEntry();
+});
+
+// ── Chips ──────────────────────────────────────────────────
+function buildChips() {
+  document.getElementById('repChips').innerHTML = REPS.map(r =>
+    `<div class="chip" onclick="pickRep('${r}',this)">${r}</div>`
+  ).join('');
+}
+function pickRep(rep, el) {
+  selectedRep = rep;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ── Helpers ────────────────────────────────────────────────
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function fmtDate(iso) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+}
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.className = 'toast ' + type;
+  el.innerHTML = (type === 'ok' ? '✅ ' : '❌ ') + msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── GitHub API ─────────────────────────────────────────────
+async function ghGet() {
+  const r = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`,
+    { headers: { Authorization: `token ${token()}`, Accept: 'application/vnd.github.v3+json' } }
+  );
+  if (r.status === 404) return { data: [], sha: null };
+  if (!r.ok) throw new Error(`GitHub ${r.status}`);
+  const j = await r.json();
+  return { data: JSON.parse(atob(j.content.replace(/\n/g,''))), sha: j.sha };
+}
+
+async function ghPut(data, sha) {
+  const body = {
+    message: 'Update payouts',
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+    branch: BRANCH
+  };
+  if (sha) body.sha = sha;
+  const r = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${token()}`,
+        Accept: 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }
+  );
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message || `GitHub ${r.status}`); }
+}
+
+async function loadData() {
+  try {
+    const { data } = await ghGet();
+    allPayouts = data;
+    renderAll();
+  } catch(e) {
+    toast('Could not load data: ' + e.message, 'err');
+  }
+}
+
+// ── Save entry ─────────────────────────────────────────────
+async function saveEntry() {
+  const date   = document.getElementById('entryDate').value;
+  const comp   = document.getElementById('entryComp').value.trim();
+  const amount = parseFloat(document.getElementById('entryAmount').value);
+
+  if (!date)          return toast('Please pick a date', 'err');
+  if (!comp)          return toast('Please enter a competition name', 'err');
+  if (!selectedRep)   return toast('Please select a rep', 'err');
+  if (!amount || amount <= 0) return toast('Enter a valid amount', 'err');
+
+  const btn = document.getElementById('saveBtn');
+  const txt = document.getElementById('saveBtnText');
+  btn.disabled = true;
+  txt.innerHTML = '<div class="spinner"></div>';
+
+  try {
+    const { data, sha } = await ghGet();
+    data.push({ date, competition: comp, rep: selectedRep, amount });
+    await ghPut(data, sha);
+    allPayouts = data;
+    closeEntry();
+    renderAll();
+    toast(`${selectedRep} — AED ${amount.toLocaleString()} saved!`);
+  } catch(e) {
+    toast(e.message || 'Save failed', 'err');
+  } finally {
+    btn.disabled = false;
+    txt.textContent = 'Save Entry';
+  }
+}
+
+// ── Filters ────────────────────────────────────────────────
+function setPeriod(p, el) {
+  currentPeriod = p;
+  document.querySelectorAll('.fp').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  renderAll();
+}
+
+function getRange(p) {
+  const now   = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (p === 'this_week') {
+    const s = new Date(today); s.setDate(today.getDate() - today.getDay());
+    const e = new Date(s); e.setDate(s.getDate() + 6);
+    return { s, e };
+  }
+  if (p === 'last_week') {
+    const ws = new Date(today); ws.setDate(today.getDate() - today.getDay());
+    const s  = new Date(ws); s.setDate(ws.getDate() - 7);
+    const e  = new Date(ws); e.setDate(ws.getDate() - 1);
+    return { s, e };
+  }
+  if (p === 'this_month') {
+    return { s: new Date(today.getFullYear(), today.getMonth(), 1),
+             e: new Date(today.getFullYear(), today.getMonth()+1, 0) };
+  }
+  if (p === 'last_month') {
+    return { s: new Date(today.getFullYear(), today.getMonth()-1, 1),
+             e: new Date(today.getFullYear(), today.getMonth(), 0) };
+  }
+  return null;
+}
+
+function applyFilters() {
+  const compVal = document.getElementById('compFilter').value;
+  let data = allPayouts;
+
+  if (currentPeriod !== 'all') {
+    const { s, e } = getRange(currentPeriod);
+    data = data.filter(p => {
+      const d = new Date(p.date + 'T00:00:00');
+      return d >= s && d <= e;
     });
   }
+  if (compVal) {
+    data = data.filter(p => p.competition === compVal);
+  }
+  return data;
+}
 
-  function dayName() {
-    return new Date().toLocaleDateString('en-US', { weekday: 'long' });
+// ── Render ─────────────────────────────────────────────────
+function renderAll() {
+  // Update competition dropdown
+  const comps = [...new Set(allPayouts.map(p => p.competition))].sort();
+  const sel   = document.getElementById('compFilter');
+  const cur   = sel.value;
+  sel.innerHTML = '<option value="">All Competitions</option>' +
+    comps.map(c => `<option value="${c}" ${c===cur?'selected':''}>${c}</option>`).join('');
+
+  const data = applyFilters();
+
+  // Summary
+  const total = data.reduce((s,p) => s + p.amount, 0);
+  document.getElementById('sTotal').textContent   = 'AED ' + total.toLocaleString();
+  document.getElementById('sEntries').textContent = data.length;
+  document.getElementById('sComps').textContent   = new Set(data.map(p=>p.competition)).size;
+
+  // Rep breakdown
+  const byRep = {};
+  data.forEach(p => {
+    if (!byRep[p.rep]) byRep[p.rep] = { total: 0, count: 0 };
+    byRep[p.rep].total += p.amount;
+    byRep[p.rep].count++;
+  });
+  const sortedReps = Object.entries(byRep).sort((a,b) => b[1].total - a[1].total);
+  const grid = document.getElementById('repGrid');
+  if (!sortedReps.length) {
+    grid.innerHTML = '';
+  } else {
+    grid.innerHTML = sortedReps.map(([rep, s]) => `
+      <div class="rep-card">
+        <div class="rep-av">${rep[0]}</div>
+        <div>
+          <div class="rep-name">${rep}</div>
+          <div class="rep-meta">${s.count} payout${s.count!==1?'s':''}</div>
+        </div>
+        <div class="rep-amount">AED ${s.total.toLocaleString()}</div>
+      </div>`).join('');
   }
 
-  function nowTime() {
-    return new Date().toLocaleTimeString('en-US', { hour12: false });
+  // Entries table
+  const sorted = [...data].sort((a,b) => b.date.localeCompare(a.date));
+  const body   = document.getElementById('entriesBody');
+  const empty  = document.getElementById('emptyState');
+
+  if (!sorted.length) {
+    body.innerHTML = '';
+    empty.style.display = '';
+  } else {
+    empty.style.display = 'none';
+    body.innerHTML = sorted.map(p => `
+      <tr>
+        <td><span class="td-av">${p.rep[0]}</span><span class="td-rep">${p.rep}</span></td>
+        <td><span class="td-comp">${p.competition}</span></td>
+        <td class="td-date">${fmtDate(p.date)}</td>
+        <td class="td-amount">AED ${Number(p.amount).toLocaleString()}</td>
+      </tr>`).join('');
   }
-
-  // ── Clock ─────────────────────────────
-  function startClock() {
-    const el = document.getElementById('clock');
-    setInterval(() => { el.textContent = nowTime(); }, 1000);
-    el.textContent = nowTime();
-  }
-
-  // ── Date fields ───────────────────────
-  function setDateFields() {
-    document.getElementById('big-date').textContent  = todayDisplay();
-    document.getElementById('day-name').textContent  = dayName();
-    document.getElementById('field-date').value      = todayISO();
-  }
-
-  // ── Tag picker ───────────────────────
-  function buildTagPicker() {
-    const picker = document.getElementById('tag-picker');
-    picker.innerHTML = '';
-    SALESPERSON_NAMES.forEach(name => {
-      const tag = document.createElement('div');
-      tag.className = 'tag-option';
-      tag.textContent = name;
-      tag.onclick = () => selectTag(name, tag);
-      picker.appendChild(tag);
-    });
-    // Custom input
-    const wrap = document.createElement('div');
-    wrap.className = 'tag-custom';
-    wrap.innerHTML = `<input type="text" placeholder="Other…" id="tag-custom-input"
-                        oninput="onCustomTag(this)" onfocus="clearTags()"/>`;
-    picker.appendChild(wrap);
-  }
-
-  function selectTag(name, el) {
-    document.querySelectorAll('.tag-option').forEach(t => t.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById('field-salesperson').value = name;
-    document.getElementById('tag-custom-input').value = '';
-  }
-
-  function clearTags() {
-    document.querySelectorAll('.tag-option').forEach(t => t.classList.remove('selected'));
-    document.getElementById('field-salesperson').value = '';
-  }
-
-  function onCustomTag(input) {
-    document.querySelectorAll('.tag-option').forEach(t => t.classList.remove('selected'));
-    document.getElementById('field-salesperson').value = input.value.trim();
-  }
-
-  // ── Char counter ─────────────────────
-  function updateCounter() {
-    const v = document.getElementById('field-notes').value.length;
-    document.getElementById('char-count').textContent = v;
-  }
-
-  // ── PAT modal ────────────────────────
-  function togglePAT() {
-    const inp = document.getElementById('pat-input');
-    inp.type = inp.type === 'password' ? 'text' : 'password';
-  }
-
-  function connectGitHub() {
-    const val = document.getElementById('pat-input').value.trim();
-    if (!val) { showToast('Please enter your GitHub token.', 'error'); return; }
-    GITHUB_TOKEN = val;
-    localStorage.setItem('sb_pat', val);
-    document.getElementById('connect-overlay').classList.add('hidden');
-    loadData();
-  }
-
-  function disconnect() {
-    GITHUB_TOKEN = null;
-    cachedData = {};
-    cachedSHA  = null;
-    localStorage.removeItem('sb_pat');
-    document.getElementById('pat-input').value = '';
-    document.getElementById('connect-overlay').classList.remove('hidden');
-  }
-
-  // ── GitHub API ───────────────────────
-  function apiHeaders() {
-    return {
-      'Authorization': `token ${GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json'
-    };
-  }
-
-  async function loadData() {
-    try {
-      const res = await fetch(
-        `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`,
-        { headers: apiHeaders() }
-      );
-      if (res.status === 404) {
-        cachedData = {}; cachedSHA = null;
-      } else if (res.ok) {
-        const json = await res.json();
-        cachedSHA  = json.sha;
-        // GitHub base64 may have newlines — remove them before decoding
-        const raw = json.content.replace(/\n/g, '');
-        cachedData = JSON.parse(atob(raw));
-      } else {
-        showToast('Failed to load data from GitHub (' + res.status + ')', 'error');
-      }
-    } catch (e) {
-      showToast('Network error loading data.', 'error');
-    }
-    renderEntries();
-    renderStats();
-  }
-
-  async function saveEntry(entry) {
-    const dateKey = entry.date;
-    if (!cachedData[dateKey]) cachedData[dateKey] = [];
-    cachedData[dateKey].push(entry);
-
-    // Encode to base64 (safe for UTF-8)
-    const jsonStr  = JSON.stringify(cachedData, null, 2);
-    const bytes    = new TextEncoder().encode(jsonStr);
-    const binStr   = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
-    const b64      = btoa(binStr);
-
-    const body = {
-      message: `Add entry for ${dateKey} by ${entry.salesperson}`,
-      content: b64,
-      branch:  BRANCH
-    };
-    if (cachedSHA) body.sha = cachedSHA;
-
-    const res = await fetch(
-      `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`,
-      { method: 'PUT', headers: apiHeaders(), body: JSON.stringify(body) }
-    );
-
-    if (res.ok) {
-      const json = await res.json();
-      cachedSHA  = json.content.sha;
-      return true;
-    } else {
-      // If 409 conflict (SHA mismatch), reload and retry once
-      if (res.status === 409) {
-        await loadData();
-        return saveEntry(entry);
-      }
-      return false;
-    }
-  }
-
-  // ── Render ────────────────────────────
-  function renderEntries() {
-    const container = document.getElementById('entries-container');
-    const today     = todayISO();
-    const entries   = (cachedData[today] || []).slice().reverse();
-
-    if (!entries.length) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">📋</div>
-          <div>No entries yet today</div>
-        </div>`;
-      return;
-    }
-
-    container.innerHTML = entries.map(e => {
-      const initials = (e.salesperson || '?').slice(0, 2).toUpperCase();
-      return `
-        <div class="entry-item">
-          <div class="entry-avatar">${initials}</div>
-          <div class="entry-body">
-            <div class="entry-name">${esc(e.salesperson)}</div>
-            <div class="entry-note">${esc(e.notes)}</div>
-            <div class="entry-time">${esc(e.time || '')}</div>
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  function renderStats() {
-    const today = todayISO();
-    const todayCount = (cachedData[today] || []).length;
-    let total = 0;
-    Object.values(cachedData).forEach(arr => { total += arr.length; });
-    document.getElementById('stat-today').textContent = todayCount;
-    document.getElementById('stat-total').textContent = total;
-  }
-
-  function esc(str) {
-    return String(str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-  }
-
-  // ── Form submit ───────────────────────
-  async function handleSubmit(e) {
-    e.preventDefault();
-
-    const salesperson = document.getElementById('field-salesperson').value.trim();
-    const notes       = document.getElementById('field-notes').value.trim();
-    const date        = todayISO();
-
-    if (!salesperson) { showToast('Please select or enter a salesperson.', 'error'); return; }
-    if (!notes)        { showToast('Please add some notes.', 'error'); return; }
-    if (!GITHUB_TOKEN) { showToast('Not connected to GitHub.', 'error'); return; }
-
-    const btn = document.getElementById('submit-btn');
-    btn.classList.add('loading');
-
-    const entry = {
-      date,
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      salesperson,
-      notes
-    };
-
-    const ok = await saveEntry(entry);
-    btn.classList.remove('loading');
-
-    if (ok) {
-      showToast('Entry saved to GitHub ✓', 'success');
-      document.getElementById('field-notes').value = '';
-      updateCounter();
-      document.querySelectorAll('.tag-option').forEach(t => t.classList.remove('selected'));
-      document.getElementById('field-salesperson').value = '';
-      document.getElementById('tag-custom-input').value = '';
-      renderEntries();
-      renderStats();
-    } else {
-      showToast('Failed to save. Check your token and permissions.', 'error');
-    }
-  }
-
-  // ── Toast ─────────────────────────────
-  function showToast(msg, type = 'success') {
-    const icon = type === 'success' ? '✅' : '❌';
-    const t    = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.innerHTML = `<span class="toast-icon">${icon}</span><span>${msg}</span>`;
-    document.getElementById('toast-container').appendChild(t);
-    setTimeout(() => t.remove(), 4000);
-  }
-
-  // ── Init ──────────────────────────────
-  startClock();
-  setDateFields();
-  buildTagPicker();
-
-  // Auto-connect if token is saved
-  const savedPAT = localStorage.getItem('sb_pat');
-  if (savedPAT) {
-    GITHUB_TOKEN = savedPAT;
-    document.getElementById('connect-overlay').classList.add('hidden');
-    loadData();
-  }
+}
 </script>
 </body>
 </html>
