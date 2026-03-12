@@ -170,6 +170,26 @@
     }
     .comp-select:focus { border-color: var(--accent); }
 
+    /* ── Weekly Budget ── */
+    .budget-card {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 18px 22px; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+    }
+    .budget-left-block { flex: 1; min-width: 120px; }
+    .budget-left-val { font-size: 28px; font-weight: 900; line-height: 1; }
+    .budget-left-val.ok   { color: var(--green); }
+    .budget-left-val.warn { color: #f59e0b; }
+    .budget-left-val.over { color: #ef4444; }
+    .budget-left-label { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
+    .budget-meta { font-size: 13px; color: var(--muted); flex: 1; min-width: 160px; }
+    .budget-meta strong { color: var(--text); }
+    .budget-bar-wrap { width: 100%; background: var(--bg); border-radius: 6px; height: 8px; margin-top: 10px; overflow: hidden; }
+    .budget-bar { height: 8px; border-radius: 6px; transition: width 0.4s; }
+    .budget-bar.ok   { background: var(--green); }
+    .budget-bar.warn { background: #f59e0b; }
+    .budget-bar.over { background: #ef4444; }
+
     /* ── Summary ── */
     .summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
     .sum-card {
@@ -304,9 +324,9 @@
     </div>
 
     <div class="field">
-      <label>Amount Paid (AED)</label>
+      <label>Amount Paid (MAD)</label>
       <div class="amount-wrap">
-        <span class="amount-prefix">AED</span>
+        <span class="amount-prefix">MAD</span>
         <input type="number" id="entryAmount" placeholder="0" min="1" />
       </div>
     </div>
@@ -344,6 +364,19 @@
     <select class="comp-select" id="compFilter" onchange="renderAll()">
       <option value="">All Competitions</option>
     </select>
+  </div>
+
+  <!-- Weekly Budget -->
+  <div class="budget-card" id="budgetCard">
+    <div class="budget-left-block">
+      <div class="budget-left-val ok" id="budgetLeft">—</div>
+      <div class="budget-left-label">MAD Left This Week</div>
+    </div>
+    <div class="budget-meta">
+      <div>Weekly budget: <strong>MAD 3,000</strong></div>
+      <div style="margin-top:4px">Spent: <strong id="budgetSpent">—</strong></div>
+      <div class="budget-bar-wrap"><div class="budget-bar ok" id="budgetBar" style="width:0%"></div></div>
+    </div>
   </div>
 
   <div class="summary">
@@ -520,7 +553,7 @@ async function saveEntry() {
     allPayouts = updated;
     closeEntry();
     renderAll();
-    toast(`${rep} — AED ${amount.toLocaleString()} saved!`);
+    toast(`${rep} — MAD ${amount.toLocaleString()} saved!`);
   } catch(e) {
     toast(e.message || 'Save failed', 'err');
   } finally {
@@ -576,8 +609,41 @@ function applyFilters() {
   return data;
 }
 
+// ── Weekly Budget ──────────────────────────────────────────
+const WEEKLY_BUDGET = 3000;
+
+function renderBudget() {
+  const now   = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const weekStart = new Date(today); weekStart.setDate(today.getDate() - today.getDay());
+  const weekEnd   = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
+
+  const spent = allPayouts
+    .filter(p => {
+      const d = new Date(p.date + 'T00:00:00');
+      return d >= weekStart && d <= weekEnd;
+    })
+    .reduce((s, p) => s + Number(p.amount), 0);
+
+  const left = WEEKLY_BUDGET - spent;
+  const pct  = Math.min((spent / WEEKLY_BUDGET) * 100, 100);
+  const cls  = pct >= 100 ? 'over' : pct >= 75 ? 'warn' : 'ok';
+
+  const leftEl = document.getElementById('budgetLeft');
+  leftEl.textContent = left >= 0
+    ? 'MAD ' + left.toLocaleString()
+    : '−MAD ' + Math.abs(left).toLocaleString();
+  leftEl.className = 'budget-left-val ' + cls;
+
+  document.getElementById('budgetSpent').textContent = 'MAD ' + spent.toLocaleString();
+  const bar = document.getElementById('budgetBar');
+  bar.style.width = pct + '%';
+  bar.className   = 'budget-bar ' + cls;
+}
+
 // ── Render ─────────────────────────────────────────────────
 function renderAll() {
+  renderBudget();
   const comps = [...new Set(allPayouts.map(p => p.competition))].sort();
   const sel   = document.getElementById('compFilter');
   const cur   = sel.value;
@@ -587,7 +653,7 @@ function renderAll() {
   const data  = applyFilters();
   const total = data.reduce((s,p) => s + Number(p.amount), 0);
 
-  document.getElementById('sTotal').textContent   = 'AED ' + total.toLocaleString();
+  document.getElementById('sTotal').textContent   = 'MAD ' + total.toLocaleString();
   document.getElementById('sEntries').textContent = data.length;
   document.getElementById('sComps').textContent   = new Set(data.map(p=>p.competition)).size;
 
@@ -607,7 +673,7 @@ function renderAll() {
             <div class="rep-name">${rep}</div>
             <div class="rep-meta">${s.count} payout${s.count!==1?'s':''}</div>
           </div>
-          <div class="rep-amount">AED ${s.total.toLocaleString()}</div>
+          <div class="rep-amount">MAD ${s.total.toLocaleString()}</div>
         </div>`).join('')
     : '';
 
@@ -625,7 +691,7 @@ function renderAll() {
         <td><span class="td-av">${p.rep[0].toUpperCase()}</span><span class="td-rep">${p.rep}</span></td>
         <td><span class="td-comp">${p.competition}</span></td>
         <td class="td-date">${fmtDate(p.date)}</td>
-        <td class="td-amount">AED ${Number(p.amount).toLocaleString()}</td>
+        <td class="td-amount">MAD ${Number(p.amount).toLocaleString()}</td>
       </tr>`).join('');
   }
 }
