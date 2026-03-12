@@ -3,21 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Competition Payouts</title>
+  <title>Sales Competition Tracker</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #f4f6fb;
+      --bg: #eef0f5;
       --white: #ffffff;
       --border: #e2e6f0;
       --accent: #4f5ff0;
       --accent-light: #eef0fe;
       --green: #10b981;
-      --green-light: #ecfdf5;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --purple: #8b5cf6;
       --text: #111827;
       --muted: #6b7280;
       --muted2: #9ca3af;
+      --dark: #1a1f2e;
     }
 
     body {
@@ -25,246 +28,242 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      padding: 28px 20px;
     }
+
+    .app { max-width: 1020px; margin: 0 auto; }
+
+    /* ── Header card ── */
+    .header-card {
+      background: var(--dark);
+      border-radius: 18px;
+      padding: 28px 32px;
+      margin-bottom: 18px;
+    }
+    .header-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 22px; gap: 16px;
+    }
+    .header-brand { display: flex; align-items: center; gap: 13px; }
+    .header-icon { font-size: 30px; }
+    .header-title { font-size: 22px; font-weight: 800; color: #fff; }
+    .header-sub { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 3px; }
+    .header-sub strong { color: rgba(255,255,255,0.8); }
+    .header-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+    .add-btn {
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 10px; padding: 11px 20px; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 7px;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .add-btn:hover { background: #3d4ee0; box-shadow: 0 6px 20px rgba(79,95,240,0.4); }
+    .disconnect-btn {
+      background: none; border: none; color: rgba(255,255,255,0.35);
+      font-size: 12px; cursor: pointer; transition: color 0.15s;
+    }
+    .disconnect-btn:hover { color: rgba(255,255,255,0.65); }
+
+    /* Stats grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+    .stat-card { background: rgba(255,255,255,0.07); border-radius: 12px; padding: 14px 16px; }
+    .stat-label { font-size: 11px; color: rgba(255,255,255,0.38); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 6px; }
+    .stat-val { font-size: 20px; font-weight: 800; }
+    .stat-val.blue   { color: #7b91ff; }
+    .stat-val.orange { color: #f59e0b; }
+    .stat-val.green  { color: #10b981; }
+    .stat-val.yellow { color: #fbbf24; }
+    .stat-val.red    { color: #f87171; }
+    .stat-val.purple { color: #a78bfa; }
+
+    /* Budget bar */
+    .bar-label-row { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,0.38); margin-bottom: 7px; }
+    .bar-track { background: rgba(255,255,255,0.1); border-radius: 6px; height: 8px; overflow: hidden; }
+    .bar-fill { height: 8px; border-radius: 6px; transition: width 0.5s; }
+    .bar-fill.ok   { background: #10b981; }
+    .bar-fill.warn { background: #f59e0b; }
+    .bar-fill.over { background: #ef4444; }
+
+    /* ── Week tabs ── */
+    .week-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .week-tab {
+      padding: 7px 16px; border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--white); color: var(--muted);
+      font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.18s;
+    }
+    .week-tab.on { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+    .week-tab:hover:not(.on) { border-color: #c5cce0; color: var(--text); }
+
+    /* ── Table card ── */
+    .table-card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); overflow: hidden; }
+
+    .tbl-head {
+      display: grid; grid-template-columns: 120px 190px 1fr 130px 96px;
+      padding: 11px 20px; background: var(--bg); border-bottom: 1.5px solid var(--border);
+    }
+    .th { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+
+    .comp-block {
+      display: grid; grid-template-columns: 120px 190px 1fr 130px 96px;
+      border-bottom: 1px solid var(--border); transition: background 0.1s;
+    }
+    .comp-block:last-child { border-bottom: none; }
+    .comp-block:hover { background: #fafbff; }
+
+    .cell { padding: 14px 20px; }
+    .cell-date { font-size: 13px; color: var(--muted); padding-top: 17px; }
+    .cell-comp { padding-top: 17px; }
+    .comp-name { font-weight: 700; font-size: 15px; }
+    .cell-winners { padding-top: 0; padding-bottom: 0; }
+    .winner-line { display: flex; align-items: center; gap: 9px; padding: 5px 0; }
+    .winner-line:first-child { padding-top: 14px; }
+    .winner-line:last-child  { padding-bottom: 14px; }
+    .w-medal { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+    .w-name  { font-size: 14px; font-weight: 500; flex: 1; }
+    .w-amount { font-size: 14px; font-weight: 700; color: var(--green); white-space: nowrap; }
+    .cell-total { padding-top: 17px; }
+    .total-val  { font-size: 15px; font-weight: 800; }
+    .total-unit { font-size: 12px; color: var(--muted); margin-left: 3px; }
+    .cell-actions { padding-top: 12px; display: flex; gap: 6px; align-items: flex-start; }
+    .btn-edit {
+      background: var(--accent-light); color: var(--accent); border: none;
+      border-radius: 7px; padding: 6px 12px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .btn-edit:hover { background: var(--accent); color: #fff; }
+    .btn-del-c {
+      background: #fff0f0; color: var(--red); border: 1.5px solid #fecaca;
+      border-radius: 7px; width: 30px; height: 30px; font-size: 14px;
+      cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-del-c:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+    /* Footer */
+    .tbl-footer {
+      display: grid; grid-template-columns: 120px 190px 1fr 130px 96px;
+      padding: 13px 20px; background: var(--bg); border-top: 2px solid var(--border);
+    }
+    .foot-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; align-self: center; }
+    .foot-total { font-size: 15px; font-weight: 800; align-self: center; }
+    .foot-unit  { font-size: 12px; color: var(--muted); margin-left: 3px; }
+    .rem-badge {
+      display: inline-flex; align-items: center; padding: 5px 13px;
+      border-radius: 20px; font-size: 13px; font-weight: 700;
+    }
+    .rem-badge.ok   { background: #ecfdf5; color: var(--green); }
+    .rem-badge.warn { background: #fffbeb; color: var(--orange); }
+    .rem-badge.over { background: #fef2f2; color: var(--red); }
+
+    /* Empty */
+    .empty-state { padding: 56px 24px; text-align: center; color: var(--muted2); }
+    .empty-state .ei { font-size: 36px; margin-bottom: 10px; }
+    .empty-state p { font-size: 14px; }
 
     /* ── Overlays ── */
     .overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.4);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
       backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 9999;
+      display: flex; align-items: center; justify-content: center; z-index: 9999;
     }
     .overlay.hide { display: none; }
 
-    /* ── Token modal ── */
+    /* Token modal */
     .modal {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 36px;
-      width: 90%; max-width: 400px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 36px; width: 90%; max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.13);
     }
     .modal-icon { font-size: 28px; margin-bottom: 12px; }
-    .modal h2 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
     .modal p { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
-
-    /* ── Entry modal ── */
-    .entry-modal {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      width: 90%; max-width: 460px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
-      position: relative;
+    .modal input {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 10px 13px; font-size: 14px; outline: none; margin-bottom: 16px;
+      transition: border-color 0.2s;
     }
-    .entry-modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 24px; }
+    .modal input:focus { border-color: var(--accent); }
+
+    /* Entry modal */
+    .entry-modal {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px; width: 90%; max-width: 500px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.13); position: relative;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .entry-modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .entry-sub { font-size: 13px; color: var(--muted); margin-bottom: 22px; }
     .modal-close {
       position: absolute; top: 18px; right: 18px;
       background: var(--bg); border: 1px solid var(--border);
       border-radius: 8px; width: 30px; height: 30px;
       color: var(--muted); font-size: 14px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
+      display: flex; align-items: center; justify-content: center; transition: background 0.15s;
     }
-    .modal-close:hover { background: var(--border); color: var(--text); }
+    .modal-close:hover { background: var(--border); }
 
-    /* ── Form ── */
     .field { margin-bottom: 16px; }
     .field label {
-      display: block; font-size: 12px; font-weight: 600;
-      color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px;
-      margin-bottom: 6px;
+      display: block; font-size: 12px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px;
     }
-    .field input, .field select {
-      width: 100%;
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 13px;
-      color: var(--text); font-size: 14px;
-      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    .field input {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 10px 13px; font-size: 14px; color: var(--text); outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .field input:focus, .field select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(79,95,240,0.12);
-    }
+    .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,95,240,0.12); }
     .field input::placeholder { color: var(--muted2); }
 
-    .amount-wrap { position: relative; }
-    .amount-prefix {
-      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
-      color: var(--muted); font-size: 13px; font-weight: 700; pointer-events: none;
+    .winner-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .winner-medal { font-size: 18px; flex-shrink: 0; width: 26px; text-align: center; }
+    .winner-rep {
+      flex: 1; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 9px 12px; font-size: 14px; color: var(--text); outline: none;
+      transition: border-color 0.2s;
     }
-    .amount-wrap input { padding-left: 52px; font-size: 18px; font-weight: 700; }
+    .winner-rep:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,95,240,0.12); }
+    .winner-rep::placeholder { color: var(--muted2); }
+    .winner-amount {
+      width: 90px; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 9px 10px; font-size: 14px; color: var(--text); outline: none; text-align: right;
+      transition: border-color 0.2s;
+    }
+    .winner-amount:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,95,240,0.12); }
+    .winner-amount::placeholder { color: var(--muted2); }
+    .winner-del {
+      background: none; border: 1.5px solid var(--border); border-radius: 7px;
+      color: var(--muted2); width: 28px; height: 28px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: all 0.15s; font-size: 13px;
+    }
+    .winner-del:hover { border-color: #fca5a5; color: var(--red); background: #fff5f5; }
 
-    /* ── Buttons ── */
-    .btn {
-      padding: 10px 18px; border-radius: 9px; border: none;
-      font-size: 13px; font-weight: 600; cursor: pointer;
-      transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+    .add-winner-btn {
+      width: 100%; background: none; border: 1.5px dashed var(--border);
+      border-radius: 10px; padding: 9px; font-size: 13px; color: var(--muted);
+      cursor: pointer; margin-top: 4px; transition: all 0.18s;
     }
+    .add-winner-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+    .comp-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--bg); border-radius: 10px; padding: 10px 14px;
+      font-size: 13px; color: var(--muted); margin: 12px 0 16px;
+    }
+    .comp-total-row strong { font-size: 15px; color: var(--text); }
+
     .btn-primary {
-      background: var(--accent); color: #fff;
-      width: 100%; justify-content: center; font-size: 14px; padding: 13px;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 10px; width: 100%; padding: 13px; font-size: 14px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all 0.2s;
     }
     .btn-primary:hover { background: #3d4ee0; box-shadow: 0 6px 20px rgba(79,95,240,0.3); }
     .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
-    .btn-ghost {
-      background: var(--white); color: var(--muted);
-      border: 1.5px solid var(--border); font-size: 12px; padding: 8px 14px;
-    }
-    .btn-ghost:hover { color: var(--text); border-color: #c5cce0; }
-    .add-btn {
-      background: var(--accent); color: #fff; border: none;
-      border-radius: 9px; padding: 10px 18px; font-size: 13px; font-weight: 700;
-      cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
-    }
-    .add-btn:hover { background: #3d4ee0; box-shadow: 0 6px 20px rgba(79,95,240,0.3); }
 
-    /* ── App ── */
-    .app { max-width: 920px; margin: 0 auto; padding: 28px 20px; }
-
-    /* ── Topbar ── */
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 28px;
-    }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-icon {
-      width: 42px; height: 42px; border-radius: 12px;
-      background: var(--accent); color: #fff;
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
-      box-shadow: 0 4px 14px rgba(79,95,240,0.3);
-    }
-    .brand-name { font-size: 17px; font-weight: 800; color: var(--text); }
-    .brand-sub { font-size: 11px; color: var(--muted2); margin-top: 2px; }
-    .topbar-right { display: flex; gap: 10px; align-items: center; }
-
-    /* ── Filters ── */
-    .filters {
-      display: flex; gap: 10px; flex-wrap: wrap;
-      align-items: center; margin-bottom: 22px;
-    }
-    .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
-    .fp {
-      padding: 7px 15px; border-radius: 20px;
-      border: 1.5px solid var(--border);
-      background: var(--white); color: var(--muted);
-      font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.18s;
-    }
-    .fp.on {
-      background: var(--accent-light);
-      border-color: var(--accent); color: var(--accent);
-      font-weight: 600;
-    }
-    .fp:hover:not(.on) { border-color: #c5cce0; color: var(--text); }
-
-    .comp-select {
-      background: var(--white); border: 1.5px solid var(--border);
-      border-radius: 20px; padding: 7px 14px;
-      color: var(--text); font-size: 13px; outline: none; cursor: pointer;
-      transition: border-color 0.18s;
-    }
-    .comp-select:focus { border-color: var(--accent); }
-
-    /* ── Weekly Budget ── */
-    .budget-card {
-      background: var(--white); border: 1.5px solid var(--border);
-      border-radius: 14px; padding: 18px 22px; margin-bottom: 14px;
-      display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
-    }
-    .budget-left-block { flex: 1; min-width: 120px; }
-    .budget-left-val { font-size: 28px; font-weight: 900; line-height: 1; }
-    .budget-left-val.ok   { color: var(--green); }
-    .budget-left-val.warn { color: #f59e0b; }
-    .budget-left-val.over { color: #ef4444; }
-    .budget-left-label { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
-    .budget-meta { font-size: 13px; color: var(--muted); flex: 1; min-width: 160px; }
-    .budget-meta strong { color: var(--text); }
-    .budget-bar-wrap { width: 100%; background: var(--bg); border-radius: 6px; height: 8px; margin-top: 10px; overflow: hidden; }
-    .budget-bar { height: 8px; border-radius: 6px; transition: width 0.4s; }
-    .budget-bar.ok   { background: var(--green); }
-    .budget-bar.warn { background: #f59e0b; }
-    .budget-bar.over { background: #ef4444; }
-
-    /* ── Summary ── */
-    .summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
-    .sum-card {
-      background: var(--white); border: 1.5px solid var(--border);
-      border-radius: 14px; padding: 18px 20px;
-    }
-    .sum-val { font-size: 22px; font-weight: 800; color: var(--accent); }
-    .sum-label { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
-
-    /* ── Rep grid ── */
-    .section-head {
-      font-size: 11px; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 10px;
-    }
-    .rep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 10px; margin-bottom: 24px; }
-    .rep-card {
-      background: var(--white); border: 1.5px solid var(--border);
-      border-radius: 13px; padding: 15px 17px;
-      display: flex; align-items: center; gap: 12px;
-      transition: border-color 0.18s, box-shadow 0.18s;
-    }
-    .rep-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(79,95,240,0.08); }
-    .rep-av {
-      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
-      background: var(--accent-light); color: var(--accent);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 16px;
-    }
-    .rep-name { font-weight: 700; font-size: 14px; }
-    .rep-meta { font-size: 12px; color: var(--muted2); margin-top: 1px; }
-    .rep-amount { margin-left: auto; font-weight: 800; font-size: 15px; color: var(--green); }
-
-    /* ── Table ── */
-    .table-wrap {
-      background: var(--white); border: 1.5px solid var(--border);
-      border-radius: 14px; overflow: hidden;
-    }
-    table { width: 100%; border-collapse: collapse; }
-    thead th {
-      padding: 11px 18px; text-align: left;
-      font-size: 11px; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.6px;
-      background: var(--bg); border-bottom: 1.5px solid var(--border);
-    }
-    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #fafbff; }
-    tbody td { padding: 12px 18px; font-size: 14px; }
-    .td-av {
-      width: 26px; height: 26px; border-radius: 6px;
-      background: var(--accent-light); color: var(--accent);
-      display: inline-flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 11px; vertical-align: middle; margin-right: 9px;
-    }
-    .td-rep { font-weight: 600; }
-    .td-comp {
-      display: inline-block; padding: 3px 10px; border-radius: 6px;
-      background: var(--accent-light); border: 1px solid rgba(79,95,240,0.15);
-      font-size: 12px; color: var(--accent); font-weight: 500;
-    }
-    .td-date { color: var(--muted); font-size: 13px; }
-    .td-amount { font-weight: 800; font-size: 14px; color: var(--green); }
-    .td-del {
-      background: none; border: 1.5px solid var(--border); border-radius: 7px;
-      color: var(--muted2); font-size: 13px; padding: 4px 8px; cursor: pointer;
-      transition: all 0.15s; line-height: 1;
-    }
-    .td-del:hover { border-color: #fca5a5; color: #ef4444; background: #fff5f5; }
-
-    /* ── Empty ── */
-    .empty { text-align: center; padding: 52px 24px; color: var(--muted2); }
-    .empty .ei { font-size: 36px; margin-bottom: 10px; }
-    .empty p { font-size: 14px; }
-
-    /* ── Toast ── */
+    /* Toast */
     .toast {
       position: fixed; bottom: 28px; left: 50%;
       transform: translateX(-50%) translateY(100px);
@@ -287,9 +286,12 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    @media (max-width: 520px) {
-      .summary { grid-template-columns: 1fr 1fr; }
-      thead th:nth-child(3), tbody td:nth-child(3) { display: none; }
+    @media (max-width: 680px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .tbl-head, .comp-block, .tbl-footer { grid-template-columns: 100px 1fr 80px; }
+      .tbl-head .th:nth-child(2), .comp-block .cell-comp,
+      .tbl-head .th:nth-child(5), .cell-actions { display: none; }
+      .tbl-footer > div:nth-child(2), .tbl-footer > div:nth-child(5) { display: none; }
     }
   </style>
 </head>
@@ -301,118 +303,103 @@
     <div class="modal-icon">🔑</div>
     <h2>Connect to GitHub</h2>
     <p>Enter your GitHub Personal Access Token (with <strong>repo</strong> or <strong>contents: read &amp; write</strong> scope). Stored only in your browser.</p>
-    <div class="field" style="margin-bottom:16px">
-      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
-    </div>
-    <button class="btn btn-primary" onclick="saveToken()">Connect →</button>
+    <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+    <button class="btn-primary" onclick="saveToken()">Connect →</button>
   </div>
 </div>
 
-<!-- Add Entry Modal -->
+<!-- Entry Modal -->
 <div class="overlay hide" id="entryOverlay">
   <div class="entry-modal">
     <button class="modal-close" onclick="closeEntry()">✕</button>
-    <h2>Log Payout</h2>
+    <h2 id="modalTitle">New Competition</h2>
+    <div class="entry-sub">Fill in the details below</div>
 
+    <div class="field">
+      <label>Competition Type</label>
+      <input type="text" id="entryComp" placeholder="e.g. Most Calls, Highest Revenue…" autocomplete="off" />
+    </div>
     <div class="field">
       <label>Date</label>
       <input type="date" id="entryDate" />
     </div>
-
     <div class="field">
-      <label>Competition Name</label>
-      <input type="text" id="entryComp" placeholder="e.g. March Sprint, Q1 Challenge…" autocomplete="off" />
+      <label>Winners &amp; Prize Amounts</label>
+      <div id="winnersList"></div>
+      <button type="button" class="add-winner-btn" onclick="addWinnerRow()">＋ Add another winner</button>
     </div>
-
-    <div class="field">
-      <label>Salesperson Name</label>
-      <input type="text" id="entryRep" placeholder="Type the rep's name…" autocomplete="off" />
+    <div class="comp-total-row">
+      <span>This competition total:</span>
+      <strong id="compTotal">MAD 0</strong>
     </div>
-
-    <div class="field">
-      <label>Amount Paid (MAD)</label>
-      <div class="amount-wrap">
-        <span class="amount-prefix">MAD</span>
-        <input type="number" id="entryAmount" placeholder="0" min="1" />
-      </div>
-    </div>
-
-    <button class="btn btn-primary" id="saveBtn" onclick="saveEntry()">
-      <span id="saveBtnText">Save Entry</span>
+    <button class="btn-primary" id="saveBtn" onclick="saveEntry()">
+      <span id="saveBtnText">Add Competition</span>
     </button>
   </div>
 </div>
 
-<!-- App -->
 <div class="app">
-  <div class="topbar">
-    <div class="brand">
-      <div class="brand-icon">🏆</div>
-      <div>
-        <div class="brand-name">Competition Payouts</div>
-        <div class="brand-sub">RyanSparks7 / Sales-board</div>
+
+  <!-- Header -->
+  <div class="header-card">
+    <div class="header-top">
+      <div class="header-brand">
+        <span class="header-icon">🏆</span>
+        <div>
+          <div class="header-title">Sales Competition Tracker</div>
+          <div class="header-sub">Weekly budget: <strong>3,000 MAD</strong></div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="add-btn" onclick="openEntry()">＋ Add Competition</button>
+        <button class="disconnect-btn" onclick="disconnect()">Disconnect</button>
       </div>
     </div>
-    <div class="topbar-right">
-      <button class="btn btn-ghost" onclick="disconnect()">Disconnect</button>
-      <button class="add-btn" onclick="openEntry()">＋ Add Entry</button>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Weekly Budget</div>
+        <div class="stat-val blue">3,000 MAD</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Spent</div>
+        <div class="stat-val orange" id="hSpent">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Remaining</div>
+        <div class="stat-val green" id="hLeft">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Competitions</div>
+        <div class="stat-val purple" id="hComps">—</div>
+      </div>
+    </div>
+
+    <div class="bar-label-row">
+      <span id="barLabel">Budget usage (this week)</span>
+      <span id="barPct">0%</span>
+    </div>
+    <div class="bar-track">
+      <div class="bar-fill ok" id="budgetBar" style="width:0%"></div>
     </div>
   </div>
 
-  <div class="filters">
-    <div class="filter-group">
-      <button class="fp on" onclick="setPeriod('this_week',this)">This Week</button>
-      <button class="fp" onclick="setPeriod('last_week',this)">Last Week</button>
-      <button class="fp" onclick="setPeriod('this_month',this)">This Month</button>
-      <button class="fp" onclick="setPeriod('last_month',this)">Last Month</button>
-      <button class="fp" onclick="setPeriod('all',this)">All Time</button>
+  <!-- Week tabs -->
+  <div class="week-tabs" id="weekTabs"></div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div class="tbl-head">
+      <div class="th">Date</div>
+      <div class="th">Competition Type</div>
+      <div class="th">Winners &amp; Prizes</div>
+      <div class="th">Total Paid</div>
+      <div class="th"></div>
     </div>
-    <select class="comp-select" id="compFilter" onchange="renderAll()">
-      <option value="">All Competitions</option>
-    </select>
+    <div id="tableBody"></div>
+    <div id="tableFooter"></div>
   </div>
 
-  <!-- Weekly Budget -->
-  <div class="budget-card" id="budgetCard">
-    <div class="budget-left-block">
-      <div class="budget-left-val ok" id="budgetLeft">—</div>
-      <div class="budget-left-label">MAD Left This Week</div>
-    </div>
-    <div class="budget-meta">
-      <div>Weekly budget: <strong>MAD 3,000</strong></div>
-      <div style="margin-top:4px">Spent: <strong id="budgetSpent">—</strong></div>
-      <div class="budget-bar-wrap"><div class="budget-bar ok" id="budgetBar" style="width:0%"></div></div>
-    </div>
-  </div>
-
-  <div class="summary">
-    <div class="sum-card"><div class="sum-val" id="sTotal">—</div><div class="sum-label">Total Paid</div></div>
-    <div class="sum-card"><div class="sum-val" id="sEntries">—</div><div class="sum-label">Entries</div></div>
-    <div class="sum-card"><div class="sum-val" id="sComps">—</div><div class="sum-label">Competitions</div></div>
-  </div>
-
-  <div class="section-head">Reps Summary</div>
-  <div class="rep-grid" id="repGrid"></div>
-
-  <div class="section-head">All Entries</div>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Rep</th>
-          <th>Competition</th>
-          <th>Date</th>
-          <th>Amount</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="entriesBody"></tbody>
-    </table>
-    <div id="emptyState" class="empty" style="display:none">
-      <div class="ei">📭</div>
-      <p>No entries for this period</p>
-    </div>
-  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -422,17 +409,19 @@ const OWNER  = 'RyanSparks7';
 const REPO   = 'Sales-board';
 const BRANCH = 'main';
 const FILE   = 'data/payouts.json';
+const WEEKLY_BUDGET = 3000;
 
 let allPayouts    = [];
-let currentPeriod = 'this_week';
+let currentWeek   = 'all';
+let editingKey    = null;
+let renderedGroups = [];
+
+const MEDALS = ['🥇','🥈','🥉','🏅','🏅','🏅','🏅','🏅','🏅','🏅'];
 
 // ── Boot ──────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  if (!localStorage.getItem('gh_token')) {
-    show('tokenOverlay');
-  } else {
-    loadData();
-  }
+  if (!localStorage.getItem('gh_token')) show('tokenOverlay');
+  else loadData();
 });
 
 // ── Token ─────────────────────────────────────────────────
@@ -447,27 +436,10 @@ function disconnect() {
   if (!confirm('Disconnect and clear your saved token?')) return;
   localStorage.removeItem('gh_token');
   show('tokenOverlay');
-  document.getElementById('tokenInput').value = '';
 }
 function token() { return localStorage.getItem('gh_token'); }
-
-// ── Modals ─────────────────────────────────────────────────
 function show(id) { document.getElementById(id).classList.remove('hide'); }
 function hide(id) { document.getElementById(id).classList.add('hide'); }
-
-function openEntry() {
-  document.getElementById('entryDate').value   = todayISO();
-  document.getElementById('entryComp').value   = '';
-  document.getElementById('entryRep').value    = '';
-  document.getElementById('entryAmount').value = '';
-  show('entryOverlay');
-  setTimeout(() => document.getElementById('entryComp').focus(), 100);
-}
-function closeEntry() { hide('entryOverlay'); }
-
-document.getElementById('entryOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeEntry();
-});
 
 // ── Helpers ────────────────────────────────────────────────
 function todayISO() {
@@ -475,12 +447,20 @@ function todayISO() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function fmtDate(iso) {
-  return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
 }
+function isoWeek(dateStr) {
+  const d   = new Date(dateStr + 'T00:00:00');
+  const thu = new Date(d); thu.setDate(d.getDate() - ((d.getDay()+6)%7) + 3);
+  const jan1 = new Date(thu.getFullYear(), 0, 1);
+  const wk  = Math.ceil(((thu - jan1) / 86400000 + 1) / 7);
+  return `${thu.getFullYear()}-W${String(wk).padStart(2,'0')}`;
+}
+function thisWeek() { return isoWeek(todayISO()); }
 function toast(msg, type='ok') {
   const el = document.getElementById('toast');
   el.className = 'toast ' + type;
-  el.innerHTML = (type === 'ok' ? '✅ ' : '❌ ') + msg;
+  el.innerHTML = (type==='ok' ? '✅ ' : '❌ ') + msg;
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 3200);
 }
@@ -497,228 +477,215 @@ async function ghGet() {
     throw new Error(err.message || `GitHub error ${res.status}`);
   }
   const j = await res.json();
-  const decoded = decodeURIComponent(escape(atob(j.content.replace(/\n/g,''))));
-  return { data: JSON.parse(decoded), sha: j.sha };
+  return { data: JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,''))))), sha: j.sha };
 }
-
 async function ghPut(data, sha) {
-  const json    = JSON.stringify(data, null, 2);
-  const encoded = btoa(unescape(encodeURIComponent(json)));
-  const body    = { message: 'Update payouts', content: encoded, branch: BRANCH };
+  const body = { message: 'Update payouts', content: btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2)))), branch: BRANCH };
   if (sha) body.sha = sha;
-
   const res = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`,
-    {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token()}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    }
+    { method:'PUT', headers:{ Authorization:`Bearer ${token()}`, Accept:'application/vnd.github+json', 'Content-Type':'application/json' }, body: JSON.stringify(body) }
   );
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `GitHub error ${res.status}`);
-  }
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.message || `GitHub error ${res.status}`); }
 }
-
 async function loadData() {
   try {
     const { data } = await ghGet();
-    allPayouts = (Array.isArray(data) ? data : []).map((p, i) => ({ ...p, _idx: i }));
+    allPayouts = Array.isArray(data) ? data : [];
     renderAll();
-  } catch(e) {
-    toast('Could not load: ' + e.message, 'err');
-  }
+  } catch(e) { toast('Could not load: ' + e.message, 'err'); }
 }
 
-function strip(arr) { return arr.map(({ _idx, ...p }) => p); }
-
-// ── Delete ─────────────────────────────────────────────────
-async function deleteEntry(idx) {
-  if (!confirm('Delete this entry?')) return;
-  try {
-    const { sha } = await ghGet();
-    const updated = allPayouts.filter(p => p._idx !== idx);
-    await ghPut(strip(updated), sha);
-    allPayouts = updated.map((p, i) => ({ ...p, _idx: i }));
-    renderAll();
-    toast('Entry deleted');
-  } catch(e) {
-    toast(e.message || 'Delete failed', 'err');
-  }
+// ── Modal ──────────────────────────────────────────────────
+function addWinnerRow(rep='', amount='') {
+  const list = document.getElementById('winnersList');
+  const idx  = list.children.length;
+  const row  = document.createElement('div');
+  row.className = 'winner-row';
+  row.innerHTML = `
+    <span class="winner-medal">${MEDALS[idx]||'🏅'}</span>
+    <input class="winner-rep" type="text" placeholder="Rep name" value="${rep}" autocomplete="off" oninput="updateTotal()" />
+    <input class="winner-amount" type="number" placeholder="MAD" value="${amount}" min="1" oninput="updateTotal()" />
+    <button class="winner-del" onclick="removeWinnerRow(this)">✕</button>
+  `;
+  list.appendChild(row);
+  updateTotal();
+  if (!rep) row.querySelector('.winner-rep').focus();
+}
+function removeWinnerRow(btn) {
+  btn.closest('.winner-row').remove();
+  document.querySelectorAll('#winnersList .winner-medal').forEach((m,i) => m.textContent = MEDALS[i]||'🏅');
+  updateTotal();
+}
+function updateTotal() {
+  const t = [...document.querySelectorAll('.winner-amount')].reduce((s,el)=>s+(parseFloat(el.value)||0),0);
+  document.getElementById('compTotal').textContent = 'MAD ' + t.toLocaleString();
 }
 
-// ── Save ───────────────────────────────────────────────────
+function openEntry(idx=null) {
+  editingKey = idx !== null ? renderedGroups[idx].key : null;
+  document.getElementById('modalTitle').textContent  = editingKey ? 'Edit Competition' : 'New Competition';
+  document.getElementById('saveBtnText').textContent = editingKey ? 'Save Changes'     : 'Add Competition';
+  document.getElementById('winnersList').innerHTML = '';
+
+  if (editingKey) {
+    const g = renderedGroups[idx];
+    document.getElementById('entryDate').value = g.date;
+    document.getElementById('entryComp').value = g.comp;
+    g.winners.forEach(w => addWinnerRow(w.rep, w.amount));
+  } else {
+    document.getElementById('entryDate').value = todayISO();
+    document.getElementById('entryComp').value = '';
+    addWinnerRow();
+  }
+  updateTotal();
+  show('entryOverlay');
+  setTimeout(() => document.getElementById('entryComp').focus(), 100);
+}
+function closeEntry() { hide('entryOverlay'); editingKey = null; }
+document.getElementById('entryOverlay').addEventListener('click', function(e) { if (e.target===this) closeEntry(); });
+
+// ── Save ──────────────────────────────────────────────────
 async function saveEntry() {
-  const date   = document.getElementById('entryDate').value;
-  const comp   = document.getElementById('entryComp').value.trim();
-  const rep    = document.getElementById('entryRep').value.trim();
-  const amount = parseFloat(document.getElementById('entryAmount').value);
+  const date = document.getElementById('entryDate').value;
+  const comp = document.getElementById('entryComp').value.trim();
+  if (!date) return toast('Please pick a date', 'err');
+  if (!comp) return toast('Please enter a competition name', 'err');
 
-  if (!date)             return toast('Please pick a date', 'err');
-  if (!comp)             return toast('Please enter a competition name', 'err');
-  if (!rep)              return toast('Please enter the rep name', 'err');
-  if (!amount || amount <= 0) return toast('Enter a valid amount', 'err');
+  const winners = [...document.querySelectorAll('#winnersList .winner-row')].map(r=>({
+    rep: r.querySelector('.winner-rep').value.trim(),
+    amount: parseFloat(r.querySelector('.winner-amount').value)
+  })).filter(w=>w.rep && w.amount>0);
+  if (!winners.length) return toast('Add at least one winner with a name and amount', 'err');
 
-  const btn = document.getElementById('saveBtn');
-  const txt = document.getElementById('saveBtnText');
-  btn.disabled = true;
-  txt.innerHTML = '<div class="spinner"></div>';
+  const btn=document.getElementById('saveBtn'), txt=document.getElementById('saveBtnText');
+  btn.disabled=true; txt.innerHTML='<div class="spinner"></div>';
 
   try {
     const { data, sha } = await ghGet();
-    const updated = Array.isArray(data) ? data : [];
-    updated.push({ date, competition: comp, rep, amount });
-    await ghPut(strip(updated), sha);
-    allPayouts = updated.map((p, i) => ({ ...p, _idx: i }));
+    let updated = Array.isArray(data) ? [...data] : [];
+    if (editingKey) {
+      const g = renderedGroups.find(x=>x.key===editingKey);
+      updated = updated.filter(p => !(p.date===g.date && p.competition===g.comp));
+    }
+    winners.forEach(w => updated.push({ date, competition: comp, rep: w.rep, amount: w.amount }));
+    await ghPut(updated, sha);
+    allPayouts = updated;
     closeEntry();
     renderAll();
-    toast(`${rep} — MAD ${amount.toLocaleString()} saved!`);
-  } catch(e) {
-    toast(e.message || 'Save failed', 'err');
-  } finally {
-    btn.disabled = false;
-    txt.textContent = 'Save Entry';
-  }
+    toast(editingKey ? 'Competition updated!' : `${winners.length} winner${winners.length>1?'s':''} saved!`);
+  } catch(e) { toast(e.message||'Save failed','err'); }
+  finally { btn.disabled=false; txt.textContent = editingKey?'Save Changes':'Add Competition'; }
 }
 
-// ── Filters ────────────────────────────────────────────────
-function setPeriod(p, el) {
-  currentPeriod = p;
-  document.querySelectorAll('.fp').forEach(b => b.classList.remove('on'));
-  el.classList.add('on');
-  renderAll();
+// ── Delete competition ─────────────────────────────────────
+async function deleteComp(idx) {
+  const g = renderedGroups[idx];
+  if (!confirm(`Delete "${g.comp}" (${fmtDate(g.date)})?`)) return;
+  try {
+    const { sha } = await ghGet();
+    const updated = allPayouts.filter(p => !(p.date===g.date && p.competition===g.comp));
+    await ghPut(updated, sha);
+    allPayouts = updated;
+    renderAll();
+    toast('Competition deleted');
+  } catch(e) { toast(e.message||'Delete failed','err'); }
 }
 
-function getRange(p) {
-  const now   = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  if (p === 'this_week') {
-    const s = new Date(today); s.setDate(today.getDate() - today.getDay());
-    const e = new Date(s); e.setDate(s.getDate() + 6);
-    return { s, e };
-  }
-  if (p === 'last_week') {
-    const ws = new Date(today); ws.setDate(today.getDate() - today.getDay());
-    const s  = new Date(ws); s.setDate(ws.getDate() - 7);
-    const e  = new Date(ws); e.setDate(ws.getDate() - 1);
-    return { s, e };
-  }
-  if (p === 'this_month') {
-    return { s: new Date(today.getFullYear(), today.getMonth(), 1),
-             e: new Date(today.getFullYear(), today.getMonth()+1, 0) };
-  }
-  if (p === 'last_month') {
-    return { s: new Date(today.getFullYear(), today.getMonth()-1, 1),
-             e: new Date(today.getFullYear(), today.getMonth(), 0) };
-  }
-  return null;
+// ── Filters ───────────────────────────────────────────────
+function setWeek(w) { currentWeek=w; renderAll(); }
+function filteredPayouts() {
+  return currentWeek==='all' ? allPayouts : allPayouts.filter(p=>isoWeek(p.date)===currentWeek);
 }
 
-function applyFilters() {
-  const compVal = document.getElementById('compFilter').value;
-  let data = allPayouts;
-  if (currentPeriod !== 'all') {
-    const { s, e } = getRange(currentPeriod);
-    data = data.filter(p => {
-      const d = new Date(p.date + 'T00:00:00');
-      return d >= s && d <= e;
-    });
-  }
-  if (compVal) data = data.filter(p => p.competition === compVal);
-  return data;
-}
+// ── Render ────────────────────────────────────────────────
+function renderAll() { renderHeader(); renderTabs(); renderTable(); }
 
-// ── Weekly Budget ──────────────────────────────────────────
-const WEEKLY_BUDGET = 3000;
+function renderHeader() {
+  const tw     = thisWeek();
+  const twSpent = allPayouts.filter(p=>isoWeek(p.date)===tw).reduce((s,p)=>s+Number(p.amount),0);
+  const left   = WEEKLY_BUDGET - twSpent;
+  const pct    = Math.min((twSpent/WEEKLY_BUDGET)*100,100);
+  const cls    = pct>=100?'over':pct>=75?'warn':'ok';
 
-function renderBudget() {
-  const now   = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const weekStart = new Date(today); weekStart.setDate(today.getDate() - today.getDay());
-  const weekEnd   = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
+  const filtered = filteredPayouts();
+  const spent    = filtered.reduce((s,p)=>s+Number(p.amount),0);
+  const comps    = new Set(filtered.map(p=>p.date+'|'+p.competition)).size;
 
-  const spent = allPayouts
-    .filter(p => {
-      const d = new Date(p.date + 'T00:00:00');
-      return d >= weekStart && d <= weekEnd;
-    })
-    .reduce((s, p) => s + Number(p.amount), 0);
-
-  const left = WEEKLY_BUDGET - spent;
-  const pct  = Math.min((spent / WEEKLY_BUDGET) * 100, 100);
-  const cls  = pct >= 100 ? 'over' : pct >= 75 ? 'warn' : 'ok';
-
-  const leftEl = document.getElementById('budgetLeft');
-  leftEl.textContent = left >= 0
-    ? 'MAD ' + left.toLocaleString()
-    : '−MAD ' + Math.abs(left).toLocaleString();
-  leftEl.className = 'budget-left-val ' + cls;
-
-  document.getElementById('budgetSpent').textContent = 'MAD ' + spent.toLocaleString();
+  document.getElementById('hSpent').textContent = spent.toLocaleString() + ' MAD';
+  const leftEl = document.getElementById('hLeft');
+  leftEl.textContent = (left>=0 ? left.toLocaleString() : '−'+Math.abs(left).toLocaleString()) + ' MAD left';
+  leftEl.className = 'stat-val ' + (left<0?'red':left<600?'yellow':'green');
+  document.getElementById('hComps').textContent = comps;
+  document.getElementById('barLabel').textContent = currentWeek==='all' ? 'Budget usage (this week)' : `Budget usage (${currentWeek})`;
+  document.getElementById('barPct').textContent   = Math.round(pct) + '%';
   const bar = document.getElementById('budgetBar');
-  bar.style.width = pct + '%';
-  bar.className   = 'budget-bar ' + cls;
+  bar.style.width = pct + '%'; bar.className = 'bar-fill ' + cls;
 }
 
-// ── Render ─────────────────────────────────────────────────
-function renderAll() {
-  renderBudget();
-  const comps = [...new Set(allPayouts.map(p => p.competition))].sort();
-  const sel   = document.getElementById('compFilter');
-  const cur   = sel.value;
-  sel.innerHTML = '<option value="">All Competitions</option>' +
-    comps.map(c => `<option value="${c}"${c===cur?' selected':''}>${c}</option>`).join('');
+function renderTabs() {
+  const weeks = [...new Set(allPayouts.map(p=>isoWeek(p.date)))].sort().reverse();
+  document.getElementById('weekTabs').innerHTML =
+    `<button class="week-tab${currentWeek==='all'?' on':''}" onclick="setWeek('all')">All Weeks</button>` +
+    weeks.map(w=>`<button class="week-tab${currentWeek===w?' on':''}" onclick="setWeek('${w}')">${w}</button>`).join('');
+}
 
-  const data  = applyFilters();
-  const total = data.reduce((s,p) => s + Number(p.amount), 0);
+function renderTable() {
+  const data   = filteredPayouts();
+  const body   = document.getElementById('tableBody');
+  const footer = document.getElementById('tableFooter');
 
-  document.getElementById('sTotal').textContent   = 'MAD ' + total.toLocaleString();
-  document.getElementById('sEntries').textContent = data.length;
-  document.getElementById('sComps').textContent   = new Set(data.map(p=>p.competition)).size;
-
-  // Rep cards
-  const byRep = {};
-  data.forEach(p => {
-    if (!byRep[p.rep]) byRep[p.rep] = { total: 0, count: 0 };
-    byRep[p.rep].total += Number(p.amount);
-    byRep[p.rep].count++;
-  });
-  const sorted = Object.entries(byRep).sort((a,b) => b[1].total - a[1].total);
-  document.getElementById('repGrid').innerHTML = sorted.length
-    ? sorted.map(([rep, s]) => `
-        <div class="rep-card">
-          <div class="rep-av">${rep[0].toUpperCase()}</div>
-          <div>
-            <div class="rep-name">${rep}</div>
-            <div class="rep-meta">${s.count} payout${s.count!==1?'s':''}</div>
-          </div>
-          <div class="rep-amount">MAD ${s.total.toLocaleString()}</div>
-        </div>`).join('')
-    : '';
-
-  // Table
-  const rows  = [...data].sort((a,b) => b.date.localeCompare(a.date));
-  const body  = document.getElementById('entriesBody');
-  const empty = document.getElementById('emptyState');
-  if (!rows.length) {
-    body.innerHTML = '';
-    empty.style.display = '';
-  } else {
-    empty.style.display = 'none';
-    body.innerHTML = rows.map((p, i) => `
-      <tr>
-        <td><span class="td-av">${p.rep[0].toUpperCase()}</span><span class="td-rep">${p.rep}</span></td>
-        <td><span class="td-comp">${p.competition}</span></td>
-        <td class="td-date">${fmtDate(p.date)}</td>
-        <td class="td-amount">MAD ${Number(p.amount).toLocaleString()}</td>
-        <td><button class="td-del" onclick="deleteEntry(${p._idx})">🗑</button></td>
-      </tr>`).join('');
+  if (!data.length) {
+    body.innerHTML = `<div class="empty-state"><div class="ei">📭</div><p>No entries for this period</p></div>`;
+    footer.innerHTML = '';
+    renderedGroups = [];
+    return;
   }
+
+  // Group by date+competition
+  const map = new Map();
+  data.forEach(p => {
+    const k = p.date + '|' + p.competition;
+    if (!map.has(k)) map.set(k, { key:k, date:p.date, comp:p.competition, winners:[] });
+    map.get(k).winners.push(p);
+  });
+  renderedGroups = [...map.values()].sort((a,b)=>b.date.localeCompare(a.date));
+
+  body.innerHTML = renderedGroups.map((g,i) => {
+    const total  = g.winners.reduce((s,w)=>s+Number(w.amount),0);
+    const wLines = g.winners.map((w,j)=>`
+      <div class="winner-line">
+        <span class="w-medal">${MEDALS[j]||'🏅'}</span>
+        <span class="w-name">${w.rep}</span>
+        <span class="w-amount">${Number(w.amount).toLocaleString()} MAD</span>
+      </div>`).join('');
+    return `
+      <div class="comp-block">
+        <div class="cell cell-date">${fmtDate(g.date)}</div>
+        <div class="cell cell-comp"><div class="comp-name">${g.comp}</div></div>
+        <div class="cell cell-winners">${wLines}</div>
+        <div class="cell cell-total"><span class="total-val">${total.toLocaleString()}</span><span class="total-unit">MAD</span></div>
+        <div class="cell cell-actions">
+          <button class="btn-edit" onclick="openEntry(${i})">Edit</button>
+          <button class="btn-del-c" onclick="deleteComp(${i})">✕</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Footer
+  const totalSpent = data.reduce((s,p)=>s+Number(p.amount),0);
+  const twSpent    = allPayouts.filter(p=>isoWeek(p.date)===thisWeek()).reduce((s,p)=>s+Number(p.amount),0);
+  const left       = WEEKLY_BUDGET - twSpent;
+  const remCls     = left<0?'over':left<600?'warn':'ok';
+  const remText    = (left>=0?left.toLocaleString():'−'+Math.abs(left).toLocaleString()) + ' MAD left';
+  footer.innerHTML = `
+    <div class="tbl-footer">
+      <div class="foot-label">Total Spent</div>
+      <div></div>
+      <div></div>
+      <div><span class="foot-total">${totalSpent.toLocaleString()}</span><span class="foot-unit">MAD</span></div>
+      <div><span class="rem-badge ${remCls}">${remText}</span></div>
+    </div>`;
 }
 </script>
 </body>
