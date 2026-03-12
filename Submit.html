@@ -8,16 +8,16 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0b0d17;
-      --surface: #13162a;
-      --surface2: #1a1e35;
-      --border: rgba(255,255,255,0.07);
-      --accent: #5b6af0;
-      --accent2: #a78bfa;
-      --green: #34d399;
-      --text: #e4e6f1;
-      --muted: #5a6080;
-      --muted2: #8891b8;
+      --bg: #f4f6fb;
+      --white: #ffffff;
+      --border: #e2e6f0;
+      --accent: #4f5ff0;
+      --accent-light: #eef0fe;
+      --green: #10b981;
+      --green-light: #ecfdf5;
+      --text: #111827;
+      --muted: #6b7280;
+      --muted2: #9ca3af;
     }
 
     body {
@@ -27,267 +27,236 @@
       min-height: 100vh;
     }
 
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(91,106,240,0.12) 0%, transparent 60%);
-      pointer-events: none; z-index: 0;
-    }
-
-    /* ── Token Modal ── */
+    /* ── Overlays ── */
     .overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(14px);
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(6px);
       display: flex; align-items: center; justify-content: center;
       z-index: 9999;
     }
     .overlay.hide { display: none; }
 
+    /* ── Token modal ── */
     .modal {
-      background: var(--surface);
+      background: var(--white);
       border: 1px solid var(--border);
-      border-radius: 20px;
+      border-radius: 16px;
       padding: 36px;
       width: 90%; max-width: 400px;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
     }
-    .modal-icon { font-size: 28px; margin-bottom: 14px; }
-    .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-    .modal p { color: var(--muted2); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+    .modal-icon { font-size: 28px; margin-bottom: 12px; }
+    .modal h2 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .modal p { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
 
-    /* ── Entry Modal ── */
+    /* ── Entry modal ── */
     .entry-modal {
-      background: var(--surface);
+      background: var(--white);
       border: 1px solid var(--border);
-      border-radius: 20px;
+      border-radius: 16px;
       padding: 32px;
       width: 90%; max-width: 460px;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
       position: relative;
     }
     .entry-modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 24px; }
     .modal-close {
-      position: absolute; top: 20px; right: 20px;
-      background: rgba(255,255,255,0.06); border: none; border-radius: 8px;
-      width: 30px; height: 30px; color: var(--muted2); font-size: 16px;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      position: absolute; top: 18px; right: 18px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; width: 30px; height: 30px;
+      color: var(--muted); font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
       transition: background 0.15s;
     }
-    .modal-close:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+    .modal-close:hover { background: var(--border); color: var(--text); }
 
-    /* ── Form elements ── */
-    .field { margin-bottom: 18px; }
+    /* ── Form ── */
+    .field { margin-bottom: 16px; }
     .field label {
-      display: block; font-size: 11px; font-weight: 700;
-      color: var(--muted2); text-transform: uppercase; letter-spacing: 0.8px;
-      margin-bottom: 8px;
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px;
+      margin-bottom: 6px;
     }
     .field input, .field select {
       width: 100%;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
+      background: var(--white);
+      border: 1.5px solid var(--border);
       border-radius: 10px;
-      padding: 11px 13px;
+      padding: 10px 13px;
       color: var(--text); font-size: 14px;
       outline: none; transition: border-color 0.2s, box-shadow 0.2s;
     }
     .field input:focus, .field select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(91,106,240,0.18);
+      box-shadow: 0 0 0 3px rgba(79,95,240,0.12);
     }
-    .field input::placeholder { color: var(--muted); }
-    .field select option { background: #1a1e35; }
-
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip {
-      padding: 8px 18px; border-radius: 50px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.03);
-      color: var(--muted2); font-size: 13px; font-weight: 500;
-      cursor: pointer; transition: all 0.18s; user-select: none;
-    }
-    .chip:hover { border-color: rgba(91,106,240,0.4); color: var(--text); }
-    .chip.on {
-      background: rgba(91,106,240,0.2);
-      border-color: var(--accent); color: #fff;
-    }
+    .field input::placeholder { color: var(--muted2); }
 
     .amount-wrap { position: relative; }
     .amount-prefix {
       position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
-      color: var(--muted2); font-size: 13px; font-weight: 700; pointer-events: none;
+      color: var(--muted); font-size: 13px; font-weight: 700; pointer-events: none;
     }
     .amount-wrap input { padding-left: 52px; font-size: 18px; font-weight: 700; }
 
-    /* ── Shared button ── */
+    /* ── Buttons ── */
     .btn {
-      padding: 11px 20px; border-radius: 10px; border: none;
+      padding: 10px 18px; border-radius: 9px; border: none;
       font-size: 13px; font-weight: 600; cursor: pointer;
-      transition: all 0.2s; display: inline-flex; align-items: center; gap: 7px;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
     }
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; width: 100%; justify-content: center;
-      font-size: 14px; padding: 13px;
+      background: var(--accent); color: #fff;
+      width: 100%; justify-content: center; font-size: 14px; padding: 13px;
     }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(91,106,240,0.4); }
-    .btn-primary:active { transform: none; }
-    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-primary:hover { background: #3d4ee0; box-shadow: 0 6px 20px rgba(79,95,240,0.3); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
     .btn-ghost {
-      background: transparent; color: var(--muted2);
-      border: 1px solid var(--border); font-size: 12px; padding: 8px 14px;
+      background: var(--white); color: var(--muted);
+      border: 1.5px solid var(--border); font-size: 12px; padding: 8px 14px;
     }
-    .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.16); }
+    .btn-ghost:hover { color: var(--text); border-color: #c5cce0; }
+    .add-btn {
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 9px; padding: 10px 18px; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .add-btn:hover { background: #3d4ee0; box-shadow: 0 6px 20px rgba(79,95,240,0.3); }
 
-    /* ── App shell ── */
-    .app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 28px 20px; }
+    /* ── App ── */
+    .app { max-width: 920px; margin: 0 auto; padding: 28px 20px; }
 
-    /* ── Top bar ── */
+    /* ── Topbar ── */
     .topbar {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
     .brand { display: flex; align-items: center; gap: 12px; }
     .brand-icon {
       width: 42px; height: 42px; border-radius: 12px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      background: var(--accent); color: #fff;
       display: flex; align-items: center; justify-content: center; font-size: 18px;
-      box-shadow: 0 6px 20px rgba(91,106,240,0.3);
+      box-shadow: 0 4px 14px rgba(79,95,240,0.3);
     }
-    .brand-name { font-size: 17px; font-weight: 800; letter-spacing: -0.2px; }
-    .brand-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
+    .brand-name { font-size: 17px; font-weight: 800; color: var(--text); }
+    .brand-sub { font-size: 11px; color: var(--muted2); margin-top: 2px; }
     .topbar-right { display: flex; gap: 10px; align-items: center; }
-    .add-btn {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; border: none; border-radius: 10px;
-      padding: 10px 18px; font-size: 13px; font-weight: 700;
-      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
-    }
-    .add-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(91,106,240,0.4); }
 
     /* ── Filters ── */
     .filters {
       display: flex; gap: 10px; flex-wrap: wrap;
-      margin-bottom: 24px; align-items: center;
+      align-items: center; margin-bottom: 22px;
     }
-    .filter-group { display: flex; gap: 6px; }
+    .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
     .fp {
-      padding: 8px 16px; border-radius: 20px;
-      border: 1px solid var(--border);
-      background: transparent; color: var(--muted2);
+      padding: 7px 15px; border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--white); color: var(--muted);
       font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.18s;
     }
-    .fp.on { background: rgba(91,106,240,0.15); border-color: rgba(91,106,240,0.4); color: var(--text); }
-    .fp:hover:not(.on) { border-color: rgba(255,255,255,0.16); color: var(--text); }
+    .fp.on {
+      background: var(--accent-light);
+      border-color: var(--accent); color: var(--accent);
+      font-weight: 600;
+    }
+    .fp:hover:not(.on) { border-color: #c5cce0; color: var(--text); }
 
     .comp-select {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 8px 14px;
-      color: var(--text); font-size: 13px;
-      outline: none; cursor: pointer;
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 20px; padding: 7px 14px;
+      color: var(--text); font-size: 13px; outline: none; cursor: pointer;
       transition: border-color 0.18s;
     }
     .comp-select:focus { border-color: var(--accent); }
-    .comp-select option { background: #1a1e35; }
 
-    /* ── Summary cards ── */
-    .summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px; }
+    /* ── Summary ── */
+    .summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
     .sum-card {
-      background: var(--surface); border: 1px solid var(--border);
+      background: var(--white); border: 1.5px solid var(--border);
       border-radius: 14px; padding: 18px 20px;
     }
-    .sum-val {
-      font-size: 24px; font-weight: 800;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .sum-label { font-size: 11px; color: var(--muted); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.6px; }
+    .sum-val { font-size: 22px; font-weight: 800; color: var(--accent); }
+    .sum-label { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
 
-    /* ── Rep breakdown ── */
+    /* ── Rep grid ── */
     .section-head {
       font-size: 11px; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.9px;
-      margin-bottom: 12px;
+      text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 10px;
     }
-    .rep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; margin-bottom: 28px; }
+    .rep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 10px; margin-bottom: 24px; }
     .rep-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 13px; padding: 16px 18px;
-      display: flex; align-items: center; gap: 13px;
-      transition: border-color 0.18s;
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 13px; padding: 15px 17px;
+      display: flex; align-items: center; gap: 12px;
+      transition: border-color 0.18s, box-shadow 0.18s;
     }
-    .rep-card:hover { border-color: rgba(91,106,240,0.3); }
+    .rep-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(79,95,240,0.08); }
     .rep-av {
-      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+      background: var(--accent-light); color: var(--accent);
       display: flex; align-items: center; justify-content: center;
       font-weight: 800; font-size: 16px;
     }
     .rep-name { font-weight: 700; font-size: 14px; }
-    .rep-meta { font-size: 12px; color: var(--muted2); margin-top: 2px; }
-    .rep-amount { margin-left: auto; font-weight: 800; font-size: 16px; color: var(--green); }
+    .rep-meta { font-size: 12px; color: var(--muted2); margin-top: 1px; }
+    .rep-amount { margin-left: auto; font-weight: 800; font-size: 15px; color: var(--green); }
 
-    /* ── Entries table ── */
+    /* ── Table ── */
     .table-wrap {
-      background: var(--surface); border: 1px solid var(--border);
+      background: var(--white); border: 1.5px solid var(--border);
       border-radius: 14px; overflow: hidden;
     }
     table { width: 100%; border-collapse: collapse; }
     thead th {
-      padding: 12px 18px; text-align: left;
+      padding: 11px 18px; text-align: left;
       font-size: 11px; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.7px;
-      background: rgba(255,255,255,0.02);
-      border-bottom: 1px solid var(--border);
+      text-transform: uppercase; letter-spacing: 0.6px;
+      background: var(--bg); border-bottom: 1.5px solid var(--border);
     }
-    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: rgba(255,255,255,0.02); }
-    tbody td { padding: 13px 18px; font-size: 14px; }
+    tbody tr:hover { background: #fafbff; }
+    tbody td { padding: 12px 18px; font-size: 14px; }
     .td-av {
-      width: 28px; height: 28px; border-radius: 7px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      width: 26px; height: 26px; border-radius: 6px;
+      background: var(--accent-light); color: var(--accent);
       display: inline-flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 12px; vertical-align: middle; margin-right: 9px;
+      font-weight: 800; font-size: 11px; vertical-align: middle; margin-right: 9px;
     }
     .td-rep { font-weight: 600; }
     .td-comp {
       display: inline-block; padding: 3px 10px; border-radius: 6px;
-      background: rgba(91,106,240,0.12); border: 1px solid rgba(91,106,240,0.2);
-      font-size: 12px; color: var(--accent2); font-weight: 500;
+      background: var(--accent-light); border: 1px solid rgba(79,95,240,0.15);
+      font-size: 12px; color: var(--accent); font-weight: 500;
     }
-    .td-date { color: var(--muted2); font-size: 13px; }
-    .td-amount { font-weight: 800; font-size: 15px; color: var(--green); }
+    .td-date { color: var(--muted); font-size: 13px; }
+    .td-amount { font-weight: 800; font-size: 14px; color: var(--green); }
 
     /* ── Empty ── */
-    .empty { text-align: center; padding: 52px 24px; color: var(--muted); }
-    .empty .ei { font-size: 38px; margin-bottom: 12px; }
+    .empty { text-align: center; padding: 52px 24px; color: var(--muted2); }
+    .empty .ei { font-size: 36px; margin-bottom: 10px; }
     .empty p { font-size: 14px; }
 
     /* ── Toast ── */
     .toast {
       position: fixed; bottom: 28px; left: 50%;
-      transform: translateX(-50%) translateY(120px);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px; padding: 13px 22px;
-      font-size: 14px; font-weight: 500;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      transform: translateX(-50%) translateY(100px);
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 12px 20px;
+      font-size: 14px; font-weight: 500; color: var(--text);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
       transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
       z-index: 9998; white-space: nowrap;
-      display: flex; align-items: center; gap: 9px;
+      display: flex; align-items: center; gap: 8px;
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
-    .toast.ok  { border-color: rgba(52,211,153,0.35); }
-    .toast.err { border-color: rgba(248,113,113,0.4); }
+    .toast.ok  { border-color: #6ee7b7; }
+    .toast.err { border-color: #fca5a5; }
 
     .spinner {
       width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff;
+      border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
       border-radius: 50%; animation: spin 0.7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -300,13 +269,15 @@
 </head>
 <body>
 
-<!-- Token Setup -->
+<!-- Token Modal -->
 <div class="overlay hide" id="tokenOverlay">
   <div class="modal">
     <div class="modal-icon">🔑</div>
     <h2>Connect to GitHub</h2>
-    <p>Enter your GitHub Personal Access Token to read and save payout data. Stored locally in your browser — never shared.</p>
-    <div class="field"><input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" /></div>
+    <p>Enter your GitHub Personal Access Token (with <strong>repo</strong> or <strong>contents: read &amp; write</strong> scope). Stored only in your browser.</p>
+    <div class="field" style="margin-bottom:16px">
+      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+    </div>
     <button class="btn btn-primary" onclick="saveToken()">Connect →</button>
   </div>
 </div>
@@ -315,7 +286,7 @@
 <div class="overlay hide" id="entryOverlay">
   <div class="entry-modal">
     <button class="modal-close" onclick="closeEntry()">✕</button>
-    <h2>➕ Log Payout</h2>
+    <h2>Log Payout</h2>
 
     <div class="field">
       <label>Date</label>
@@ -324,12 +295,12 @@
 
     <div class="field">
       <label>Competition Name</label>
-      <input type="text" id="entryComp" placeholder="e.g. March Sprint, Q1 Challenge…" />
+      <input type="text" id="entryComp" placeholder="e.g. March Sprint, Q1 Challenge…" autocomplete="off" />
     </div>
 
     <div class="field">
-      <label>Salesperson</label>
-      <div class="chips" id="repChips"></div>
+      <label>Salesperson Name</label>
+      <input type="text" id="entryRep" placeholder="Type the rep's name…" autocomplete="off" />
     </div>
 
     <div class="field">
@@ -348,8 +319,6 @@
 
 <!-- App -->
 <div class="app">
-
-  <!-- Top bar -->
   <div class="topbar">
     <div class="brand">
       <div class="brand-icon">🏆</div>
@@ -364,7 +333,6 @@
     </div>
   </div>
 
-  <!-- Filters -->
   <div class="filters">
     <div class="filter-group">
       <button class="fp on" onclick="setPeriod('this_week',this)">This Week</button>
@@ -378,18 +346,15 @@
     </select>
   </div>
 
-  <!-- Summary -->
   <div class="summary">
     <div class="sum-card"><div class="sum-val" id="sTotal">—</div><div class="sum-label">Total Paid</div></div>
     <div class="sum-card"><div class="sum-val" id="sEntries">—</div><div class="sum-label">Entries</div></div>
     <div class="sum-card"><div class="sum-val" id="sComps">—</div><div class="sum-label">Competitions</div></div>
   </div>
 
-  <!-- Rep breakdown -->
   <div class="section-head">Reps Summary</div>
   <div class="rep-grid" id="repGrid"></div>
 
-  <!-- Entries -->
   <div class="section-head">All Entries</div>
   <div class="table-wrap">
     <table>
@@ -417,25 +382,18 @@ const OWNER  = 'RyanSparks7';
 const REPO   = 'Sales-board';
 const BRANCH = 'main';
 const FILE   = 'data/payouts.json';
-const REPS   = ['Ryan', 'Alex', 'Jordan', 'Taylor'];
 
 let allPayouts    = [];
 let currentPeriod = 'this_week';
-let selectedRep   = null;
 
-// ── Boot ─────────────────────────────────────────────────
+// ── Boot ──────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   if (!localStorage.getItem('gh_token')) {
     show('tokenOverlay');
   } else {
-    init();
+    loadData();
   }
 });
-
-function init() {
-  buildChips();
-  loadData();
-}
 
 // ── Token ─────────────────────────────────────────────────
 function saveToken() {
@@ -443,7 +401,7 @@ function saveToken() {
   if (!v) return toast('Please enter a token', 'err');
   localStorage.setItem('gh_token', v);
   hide('tokenOverlay');
-  init();
+  loadData();
 }
 function disconnect() {
   if (!confirm('Disconnect and clear your saved token?')) return;
@@ -453,38 +411,23 @@ function disconnect() {
 }
 function token() { return localStorage.getItem('gh_token'); }
 
-// ── Modal helpers ──────────────────────────────────────────
+// ── Modals ─────────────────────────────────────────────────
 function show(id) { document.getElementById(id).classList.remove('hide'); }
 function hide(id) { document.getElementById(id).classList.add('hide'); }
 
 function openEntry() {
-  // Reset form
-  document.getElementById('entryDate').value = todayISO();
-  document.getElementById('entryComp').value = '';
+  document.getElementById('entryDate').value   = todayISO();
+  document.getElementById('entryComp').value   = '';
+  document.getElementById('entryRep').value    = '';
   document.getElementById('entryAmount').value = '';
-  selectedRep = null;
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
   show('entryOverlay');
-  document.getElementById('entryComp').focus();
+  setTimeout(() => document.getElementById('entryComp').focus(), 100);
 }
 function closeEntry() { hide('entryOverlay'); }
 
-// Close modal on backdrop click
 document.getElementById('entryOverlay').addEventListener('click', function(e) {
   if (e.target === this) closeEntry();
 });
-
-// ── Chips ──────────────────────────────────────────────────
-function buildChips() {
-  document.getElementById('repChips').innerHTML = REPS.map(r =>
-    `<div class="chip" onclick="pickRep('${r}',this)">${r}</div>`
-  ).join('');
-}
-function pickRep(rep, el) {
-  selectedRep = rep;
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-  el.classList.add('on');
-}
 
 // ── Helpers ────────────────────────────────────────────────
 function todayISO() {
@@ -499,62 +442,69 @@ function toast(msg, type='ok') {
   el.className = 'toast ' + type;
   el.innerHTML = (type === 'ok' ? '✅ ' : '❌ ') + msg;
   el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
+  setTimeout(() => el.classList.remove('show'), 3200);
 }
 
 // ── GitHub API ─────────────────────────────────────────────
 async function ghGet() {
-  const r = await fetch(
+  const res = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`,
-    { headers: { Authorization: `token ${token()}`, Accept: 'application/vnd.github.v3+json' } }
+    { headers: { Authorization: `Bearer ${token()}`, Accept: 'application/vnd.github+json' } }
   );
-  if (r.status === 404) return { data: [], sha: null };
-  if (!r.ok) throw new Error(`GitHub ${r.status}`);
-  const j = await r.json();
-  return { data: JSON.parse(atob(j.content.replace(/\n/g,''))), sha: j.sha };
+  if (res.status === 404) return { data: [], sha: null };
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `GitHub error ${res.status}`);
+  }
+  const j = await res.json();
+  const decoded = decodeURIComponent(escape(atob(j.content.replace(/\n/g,''))));
+  return { data: JSON.parse(decoded), sha: j.sha };
 }
 
 async function ghPut(data, sha) {
-  const body = {
-    message: 'Update payouts',
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
-    branch: BRANCH
-  };
+  const json    = JSON.stringify(data, null, 2);
+  const encoded = btoa(unescape(encodeURIComponent(json)));
+  const body    = { message: 'Update payouts', content: encoded, branch: BRANCH };
   if (sha) body.sha = sha;
-  const r = await fetch(
+
+  const res = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`,
     {
       method: 'PUT',
       headers: {
-        Authorization: `token ${token()}`,
-        Accept: 'application/vnd.github.v3+json',
+        Authorization: `Bearer ${token()}`,
+        Accept: 'application/vnd.github+json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(body)
     }
   );
-  if (!r.ok) { const e = await r.json(); throw new Error(e.message || `GitHub ${r.status}`); }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `GitHub error ${res.status}`);
+  }
 }
 
 async function loadData() {
   try {
     const { data } = await ghGet();
-    allPayouts = data;
+    allPayouts = Array.isArray(data) ? data : [];
     renderAll();
   } catch(e) {
-    toast('Could not load data: ' + e.message, 'err');
+    toast('Could not load: ' + e.message, 'err');
   }
 }
 
-// ── Save entry ─────────────────────────────────────────────
+// ── Save ───────────────────────────────────────────────────
 async function saveEntry() {
   const date   = document.getElementById('entryDate').value;
   const comp   = document.getElementById('entryComp').value.trim();
+  const rep    = document.getElementById('entryRep').value.trim();
   const amount = parseFloat(document.getElementById('entryAmount').value);
 
-  if (!date)          return toast('Please pick a date', 'err');
-  if (!comp)          return toast('Please enter a competition name', 'err');
-  if (!selectedRep)   return toast('Please select a rep', 'err');
+  if (!date)             return toast('Please pick a date', 'err');
+  if (!comp)             return toast('Please enter a competition name', 'err');
+  if (!rep)              return toast('Please enter the rep name', 'err');
   if (!amount || amount <= 0) return toast('Enter a valid amount', 'err');
 
   const btn = document.getElementById('saveBtn');
@@ -564,12 +514,13 @@ async function saveEntry() {
 
   try {
     const { data, sha } = await ghGet();
-    data.push({ date, competition: comp, rep: selectedRep, amount });
-    await ghPut(data, sha);
-    allPayouts = data;
+    const updated = Array.isArray(data) ? data : [];
+    updated.push({ date, competition: comp, rep, amount });
+    await ghPut(updated, sha);
+    allPayouts = updated;
     closeEntry();
     renderAll();
-    toast(`${selectedRep} — AED ${amount.toLocaleString()} saved!`);
+    toast(`${rep} — AED ${amount.toLocaleString()} saved!`);
   } catch(e) {
     toast(e.message || 'Save failed', 'err');
   } finally {
@@ -614,7 +565,6 @@ function getRange(p) {
 function applyFilters() {
   const compVal = document.getElementById('compFilter').value;
   let data = allPayouts;
-
   if (currentPeriod !== 'all') {
     const { s, e } = getRange(currentPeriod);
     data = data.filter(p => {
@@ -622,65 +572,57 @@ function applyFilters() {
       return d >= s && d <= e;
     });
   }
-  if (compVal) {
-    data = data.filter(p => p.competition === compVal);
-  }
+  if (compVal) data = data.filter(p => p.competition === compVal);
   return data;
 }
 
 // ── Render ─────────────────────────────────────────────────
 function renderAll() {
-  // Update competition dropdown
   const comps = [...new Set(allPayouts.map(p => p.competition))].sort();
   const sel   = document.getElementById('compFilter');
   const cur   = sel.value;
   sel.innerHTML = '<option value="">All Competitions</option>' +
-    comps.map(c => `<option value="${c}" ${c===cur?'selected':''}>${c}</option>`).join('');
+    comps.map(c => `<option value="${c}"${c===cur?' selected':''}>${c}</option>`).join('');
 
-  const data = applyFilters();
+  const data  = applyFilters();
+  const total = data.reduce((s,p) => s + Number(p.amount), 0);
 
-  // Summary
-  const total = data.reduce((s,p) => s + p.amount, 0);
   document.getElementById('sTotal').textContent   = 'AED ' + total.toLocaleString();
   document.getElementById('sEntries').textContent = data.length;
   document.getElementById('sComps').textContent   = new Set(data.map(p=>p.competition)).size;
 
-  // Rep breakdown
+  // Rep cards
   const byRep = {};
   data.forEach(p => {
     if (!byRep[p.rep]) byRep[p.rep] = { total: 0, count: 0 };
-    byRep[p.rep].total += p.amount;
+    byRep[p.rep].total += Number(p.amount);
     byRep[p.rep].count++;
   });
-  const sortedReps = Object.entries(byRep).sort((a,b) => b[1].total - a[1].total);
-  const grid = document.getElementById('repGrid');
-  if (!sortedReps.length) {
-    grid.innerHTML = '';
-  } else {
-    grid.innerHTML = sortedReps.map(([rep, s]) => `
-      <div class="rep-card">
-        <div class="rep-av">${rep[0]}</div>
-        <div>
-          <div class="rep-name">${rep}</div>
-          <div class="rep-meta">${s.count} payout${s.count!==1?'s':''}</div>
-        </div>
-        <div class="rep-amount">AED ${s.total.toLocaleString()}</div>
-      </div>`).join('');
-  }
+  const sorted = Object.entries(byRep).sort((a,b) => b[1].total - a[1].total);
+  document.getElementById('repGrid').innerHTML = sorted.length
+    ? sorted.map(([rep, s]) => `
+        <div class="rep-card">
+          <div class="rep-av">${rep[0].toUpperCase()}</div>
+          <div>
+            <div class="rep-name">${rep}</div>
+            <div class="rep-meta">${s.count} payout${s.count!==1?'s':''}</div>
+          </div>
+          <div class="rep-amount">AED ${s.total.toLocaleString()}</div>
+        </div>`).join('')
+    : '';
 
-  // Entries table
-  const sorted = [...data].sort((a,b) => b.date.localeCompare(a.date));
-  const body   = document.getElementById('entriesBody');
-  const empty  = document.getElementById('emptyState');
-
-  if (!sorted.length) {
+  // Table
+  const rows  = [...data].sort((a,b) => b.date.localeCompare(a.date));
+  const body  = document.getElementById('entriesBody');
+  const empty = document.getElementById('emptyState');
+  if (!rows.length) {
     body.innerHTML = '';
     empty.style.display = '';
   } else {
     empty.style.display = 'none';
-    body.innerHTML = sorted.map(p => `
+    body.innerHTML = rows.map(p => `
       <tr>
-        <td><span class="td-av">${p.rep[0]}</span><span class="td-rep">${p.rep}</span></td>
+        <td><span class="td-av">${p.rep[0].toUpperCase()}</span><span class="td-rep">${p.rep}</span></td>
         <td><span class="td-comp">${p.competition}</span></td>
         <td class="td-date">${fmtDate(p.date)}</td>
         <td class="td-amount">AED ${Number(p.amount).toLocaleString()}</td>
