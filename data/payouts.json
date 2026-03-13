@@ -124,5 +124,23 @@
     "competition": "Draw Competition",
     "rep": "Heather",
     "amount": 500
+  },
+  {
+    "date": "2026-03-12",
+    "competition": "Draw Competition",
+    "rep": "Emily",
+    "amount": 50
+  },
+  {
+    "date": "2026-03-12",
+    "competition": "Draw Competition",
+    "rep": "Alexa",
+    "amount": 100
+  },
+  {
+    "date": "2026-03-12",
+    "competition": "Draw Competition",
+    "rep": "Claire",
+    "amount": 150
   }
 ]
