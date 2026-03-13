@@ -142,5 +142,29 @@
     "competition": "Draw Competition",
     "rep": "Claire",
     "amount": 150
+  },
+  {
+    "date": "2026-03-13",
+    "competition": "Draw competition",
+    "rep": "Bill",
+    "amount": 100
+  },
+  {
+    "date": "2026-03-13",
+    "competition": "Draw competition",
+    "rep": "Mason",
+    "amount": 100
+  },
+  {
+    "date": "2026-03-13",
+    "competition": "Draw competition",
+    "rep": "John",
+    "amount": 150
+  },
+  {
+    "date": "2026-03-13",
+    "competition": "Draw competition",
+    "rep": "Alexa",
+    "amount": 150
   }
 ]
