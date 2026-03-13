@@ -434,9 +434,11 @@ let renderedGroups = [];
 const MEDALS = ['🥇','🥈','🥉','🏅','🏅','🏅','🏅','🏅','🏅','🏅'];
 
 // ── Boot ──────────────────────────────────────────────────
+const SHARED_TOKEN = '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';
+
 window.addEventListener('DOMContentLoaded', () => {
-  if (!localStorage.getItem('gh_token')) show('tokenOverlay');
-  else loadData();
+  if (!localStorage.getItem('gh_token')) localStorage.setItem('gh_token', SHARED_TOKEN);
+  loadData();
 });
 
 // ── Token ─────────────────────────────────────────────────
