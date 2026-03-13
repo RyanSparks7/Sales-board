@@ -434,10 +434,10 @@ let renderedGroups = [];
 const MEDALS = ['🥇','🥈','🥉','🏅','🏅','🏅','🏅','🏅','🏅','🏅'];
 
 // ── Boot ──────────────────────────────────────────────────
-const SHARED_TOKEN = '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';
+const SHARED_TOKEN = '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';
 
 window.addEventListener('DOMContentLoaded', () => {
-  if (!localStorage.getItem('gh_token')) localStorage.setItem('gh_token', SHARED_TOKEN);
+  localStorage.setItem('gh_token', SHARED_TOKEN);
   loadData();
 });
 
