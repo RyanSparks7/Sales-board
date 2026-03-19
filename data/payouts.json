@@ -244,5 +244,17 @@
     "competition": "Draw Competition",
     "rep": "Bill",
     "amount": 200
+  },
+  {
+    "date": "2026-03-18",
+    "competition": "2 RED 200 / 3 RED 300",
+    "rep": "Emily",
+    "amount": 300
+  },
+  {
+    "date": "2026-03-18",
+    "competition": "2 RED 200 / 3 RED 300",
+    "rep": "Hazel",
+    "amount": 200
   }
 ]
