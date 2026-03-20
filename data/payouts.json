@@ -256,5 +256,23 @@
     "competition": "2 RED 200 / 3 RED 300",
     "rep": "Hazel",
     "amount": 200
+  },
+  {
+    "date": "2026-03-20",
+    "competition": "Every RED = 100Dhs",
+    "rep": "Bill",
+    "amount": 200
+  },
+  {
+    "date": "2026-03-20",
+    "competition": "Every RED = 100Dhs",
+    "rep": "Mason",
+    "amount": 100
+  },
+  {
+    "date": "2026-03-20",
+    "competition": "Every RED = 100Dhs",
+    "rep": "Hazel",
+    "amount": 100
   }
 ]
