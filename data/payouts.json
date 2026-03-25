@@ -334,5 +334,11 @@
     "competition": "Flash sale",
     "rep": "Bill",
     "amount": 100
+  },
+  {
+    "date": "2026-03-25",
+    "competition": "Flash sale",
+    "rep": "Adam",
+    "amount": 100
   }
 ]
