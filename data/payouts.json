@@ -345,6 +345,12 @@
     "date": "2026-03-25",
     "competition": "Flash sale",
     "rep": "Emily",
+    "amount": 200
+  },
+  {
+    "date": "2026-03-25",
+    "competition": "Flash sale",
+    "rep": "Jordan",
     "amount": 100
   }
 ]
